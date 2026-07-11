@@ -96,7 +96,7 @@ app.post('/api/clear', (req, res) => {
 });
 
 // Ruta comodín para SPA (enviar index.html de dist para cualquier otra ruta de la app web)
-app.get('*', (req, res) => {
+app.get('*any', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
