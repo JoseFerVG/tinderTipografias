@@ -859,41 +859,153 @@
 .consensus-h1 {
   line-height: 1.15;
   transition: all 0.3s ease;
+  font-size: 2.2rem !important;
 }
 
 .consensus-h2 {
   line-height: 1.25;
   transition: all 0.3s ease;
-}
-
-.consensus-insta {
-  padding: 1rem;
-  border-left: 3px solid #f78041;
-  background: rgba(255,255,255,0.03);
-  border-radius: 0 8px 8px 0;
-  transition: all 0.3s ease;
-}
-
-.consensus-insta-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  color: #f78041;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
+  font-size: 1.4rem !important;
 }
 
 .consensus-body {
-  line-height: 1.6;
+  line-height: 1.55;
   transition: all 0.3s ease;
-  opacity: 0.9;
+  font-size: 0.92rem !important;
 }
 
-.consensus-font-indicator {
-  font-size: 0.7rem;
+/* Simulador de Navegador Web */
+.mockup-browser {
+  border-radius: 12px;
+  border: 1px solid rgba(79, 98, 141, 0.15);
+  background: #ffffff;
+  color: #16171d;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+
+.mockup-browser-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: #f1f3f6;
+  border-bottom: 1px solid rgba(79, 98, 141, 0.1);
+}
+
+.mockup-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.mockup-dot.red { background-color: #d96a73; }
+.mockup-dot.yellow { background-color: #f8a861; }
+.mockup-dot.green { background-color: #8fb186; }
+
+.mockup-browser-url {
+  margin: 0 auto 0 calc(50% - 110px);
+  background: #ffffff;
+  border: 1px solid rgba(79, 98, 141, 0.1);
+  padding: 0.15rem 1.75rem;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  color: #4f628d;
   font-family: monospace;
+}
+
+@media (max-width: 480px) {
+  .mockup-browser-url {
+    display: none;
+  }
+}
+
+.mockup-browser-body {
+  padding: 1.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: #ffffff;
+}
+
+.mockup-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #4f628d;
+  border-bottom: 1px solid rgba(79, 98, 141, 0.08);
+  padding-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.mockup-nav-logo {
+  color: #16171d;
+  font-weight: 900;
+}
+
+.mockup-nav-links {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.mockup-hero {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.font-spec-badge {
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #4f628d;
+  background: rgba(79, 98, 141, 0.06);
+  border: 1px solid rgba(79, 98, 141, 0.12);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  align-self: flex-start;
+  margin-bottom: 0.4rem;
+}
+
+.mockup-cta {
+  align-self: flex-start;
+  padding: 0.6rem 1.25rem;
+  background: #16171d;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: var(--transition-smooth);
+}
+
+.mockup-cta:hover {
+  background: #4f628d;
+  transform: translateY(-1px);
+}
+
+/* Simulador de Instagram Post */
+.mockup-insta-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.mockup-section-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
-  margin-top: 0.3rem;
-  display: block;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-align: left;
 }
 
 /* Historial de Respuestas */

@@ -818,37 +818,69 @@ function App() {
                       </p>
 
                       <div className="consensus-preview-box">
-                        <span className="consensus-tag">Ganadora</span>
+                        <span className="consensus-tag">Identidad de Consenso</span>
                         
-                        <div style={{ marginBottom: '1.5rem' }}>
-                          <h1 className="consensus-h1" style={{ fontFamily: getFontObj(winners.h1).family }}>
-                            {ROLE_SAMPLES.h1}
-                          </h1>
-                          <span className="consensus-font-indicator">H1: {getFontName(winners.h1)} ({getFontObj(winners.h1).category})</span>
-                        </div>
-
-                        <div style={{ marginBottom: '1.5rem' }}>
-                          <h2 className="consensus-h2" style={{ fontFamily: getFontObj(winners.h2).family }}>
-                            {ROLE_SAMPLES.h2}
-                          </h2>
-                          <span className="consensus-font-indicator">H2: {getFontName(winners.h2)} ({getFontObj(winners.h2).category})</span>
-                        </div>
-
-                        <div style={{ marginBottom: '1.5rem' }}>
-                          <div className="consensus-insta">
-                            <div className="consensus-insta-label">Instagram Post</div>
-                            <p style={{ fontFamily: getFontObj(winners.instagram).family, fontSize: '1.1rem', fontStyle: 'italic', margin: 0 }}>
-                              {ROLE_SAMPLES.instagram}
-                            </p>
+                        {/* 1. Simulador de Navegador (Página Web) */}
+                        <div className="mockup-browser">
+                          <div className="mockup-browser-header">
+                            <div className="mockup-dot red"></div>
+                            <div className="mockup-dot yellow"></div>
+                            <div className="mockup-dot green"></div>
+                            <div className="mockup-browser-url">empresa.com</div>
                           </div>
-                          <span className="consensus-font-indicator">Instagram: {getFontName(winners.instagram)} ({getFontObj(winners.instagram).category})</span>
+                          
+                          <div className="mockup-browser-body">
+                            {/* Navbar */}
+                            <nav className="mockup-nav">
+                              <span className="mockup-nav-logo">BRANDING SYNC</span>
+                              <div className="mockup-nav-links">
+                                <span>Inicio</span>
+                                <span>Servicios</span>
+                                <span>Contacto</span>
+                              </div>
+                            </nav>
+                            
+                            {/* Hero Section */}
+                            <div className="mockup-hero">
+                              <span className="font-spec-badge h1-badge">H1 — {getFontName(winners.h1)} ({getFontObj(winners.h1).type})</span>
+                              <h1 className="consensus-h1" style={{ fontFamily: getFontObj(winners.h1).family, color: '#16171d', margin: '0 0 1rem 0' }}>
+                                {ROLE_SAMPLES.h1}
+                              </h1>
+
+                              <span className="font-spec-badge h2-badge" style={{ marginTop: '0.5rem' }}>H2 — {getFontName(winners.h2)} ({getFontObj(winners.h2).type})</span>
+                              <h2 className="consensus-h2" style={{ fontFamily: getFontObj(winners.h2).family, color: '#4f628d', margin: '0 0 1rem 0' }}>
+                                {ROLE_SAMPLES.h2}
+                              </h2>
+
+                              <span className="font-spec-badge body-badge" style={{ marginTop: '0.5rem' }}>Texto — {getFontName(winners.body)} ({getFontObj(winners.body).type})</span>
+                              <p className="consensus-body" style={{ fontFamily: getFontObj(winners.body).family, color: '#2e303a', margin: '0 0 1.25rem 0' }}>
+                                {ROLE_SAMPLES.body}
+                              </p>
+
+                              <button className="mockup-cta" style={{ fontFamily: getFontObj(winners.h2).family }}>
+                                Comenzar Proyecto
+                              </button>
+                            </div>
+                          </div>
                         </div>
 
-                        <div>
-                          <p className="consensus-body" style={{ fontFamily: getFontObj(winners.body).family, fontSize: '0.95rem' }}>
-                            {ROLE_SAMPLES.body}
-                          </p>
-                          <span className="consensus-font-indicator">Texto: {getFontName(winners.body)} ({getFontObj(winners.body).category})</span>
+                        {/* 2. Simulador de Instagram Post */}
+                        <div className="mockup-insta-section">
+                          <h4 className="mockup-section-title">Post de Redes Sociales (Instagram)</h4>
+                          <div className="mockup-insta-card-container">
+                            <div className="preview-insta" style={{ margin: '0 auto', width: '100%', maxWidth: '280px' }}>
+                              <p className="preview-insta-quote" style={{ fontFamily: getFontObj(winners.instagram).family }}>
+                                {ROLE_SAMPLES.instagram}
+                              </p>
+                              <div className="preview-insta-footer">
+                                <div className="preview-insta-avatar"></div>
+                                <div>
+                                  <div className="preview-insta-handle">@marca.empresa</div>
+                                  <div style={{ fontSize: '0.6rem', color: '#c1d0e0', opacity: 0.65 }}>Instagram: {getFontName(winners.instagram)}</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </section>
