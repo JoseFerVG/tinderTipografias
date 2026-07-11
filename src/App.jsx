@@ -55,6 +55,12 @@ function App() {
   // Historial global de respuestas
   const [responses, setResponses] = useState([]);
   const [selectedCollaborator, setSelectedCollaborator] = useState(null);
+  const [modalTab, setModalTab] = useState('web'); // 'web' o 'instagram'
+
+  const handleOpenCollaboratorMockup = (collaborator) => {
+    setSelectedCollaborator(collaborator);
+    setModalTab('web');
+  };
 
   const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:10000' : '';
 
@@ -1340,7 +1346,7 @@ function App() {
                           <div 
                             key={index} 
                             className="history-item clickable"
-                            onClick={() => setSelectedCollaborator(resp)}
+                            onClick={() => handleOpenCollaboratorMockup(resp)}
                             style={{ cursor: 'pointer', transition: 'all 0.2s' }}
                           >
                             <div className="history-user-info">
@@ -1402,91 +1408,151 @@ function App() {
           <div className="modal-overlay animate-fade-in" onClick={() => setSelectedCollaborator(null)}>
             <div className="modal-content glass-card animate-scale-in" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
-                <h3>Diseño Elegido por {selectedCollaborator.username}</h3>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 700 }}>Diseño de {selectedCollaborator.username}</h3>
+                  <span style={{ fontSize: '0.72rem', color: '#4f628d', opacity: 0.8 }}>Votado el {selectedCollaborator.timestamp}</span>
+                </div>
                 <button className="modal-close-btn" onClick={() => setSelectedCollaborator(null)}>✕</button>
               </div>
-              <p className="modal-subtitle">Previsualización del diseño web y redes sociales configurados por este colaborador:</p>
+
+              {/* Selector de Pestañas del Modal */}
+              <div className="modal-tabs" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', borderBottom: '1px solid rgba(79, 98, 141, 0.1)', paddingBottom: '0.75rem' }}>
+                <button 
+                  className={`modal-tab-btn ${modalTab === 'web' ? 'active' : ''}`}
+                  onClick={() => setModalTab('web')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.45rem 1rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    background: modalTab === 'web' ? '#4f628d' : 'rgba(79, 98, 141, 0.06)',
+                    color: modalTab === 'web' ? '#ffffff' : '#4f628d',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                    <line x1="8" y1="21" x2="16" y2="21" />
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                  </svg>
+                  Sitio Web
+                </button>
+                <button 
+                  className={`modal-tab-btn ${modalTab === 'instagram' ? 'active' : ''}`}
+                  onClick={() => setModalTab('instagram')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    padding: '0.45rem 1rem',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    background: modalTab === 'instagram' ? '#4f628d' : 'rgba(79, 98, 141, 0.06)',
+                    color: modalTab === 'instagram' ? '#ffffff' : '#4f628d',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                  </svg>
+                  Instagram
+                </button>
+              </div>
               
-              <div className="modal-body-scroll">
-                {/* 1. Simulador de Navegador (Página Web) */}
-                <div className="mockup-browser">
-                  <div className="mockup-browser-header">
-                    <div className="mockup-dot red"></div>
-                    <div className="mockup-dot yellow"></div>
-                    <div className="mockup-dot green"></div>
-                    <div className="mockup-browser-url">empresa.com</div>
-                  </div>
-                  
-                  <div className="mockup-browser-body">
-                    {/* Navbar */}
-                    <nav className="mockup-nav">
-                      <span className="mockup-nav-logo">BRANDING SYNC</span>
-                      <div className="mockup-nav-links">
-                        <span>Inicio</span>
-                        <span>Servicios</span>
-                        <span>Contacto</span>
+              <div className="modal-body-scroll" style={{ overflowY: 'auto', flexGrow: 1 }}>
+                {modalTab === 'web' && (
+                  <div className="animate-fade-in" style={{ width: '100%' }}>
+                    {/* Simulador de Navegador (Página Web) */}
+                    <div className="mockup-browser" style={{ boxShadow: 'none', border: '1px solid rgba(79, 98, 141, 0.12)' }}>
+                      <div className="mockup-browser-header">
+                        <div className="mockup-dot red"></div>
+                        <div className="mockup-dot yellow"></div>
+                        <div className="mockup-dot green"></div>
+                        <div className="mockup-browser-url">empresa.com</div>
                       </div>
-                    </nav>
-                    
-                    {/* Hero Section */}
-                    <div className="mockup-hero">
-                      <span className="font-spec-badge h1-badge">H1 — {getFontName(selectedCollaborator.selections.h1)} ({getFontObj(selectedCollaborator.selections.h1).type})</span>
-                      <h1 className="consensus-h1" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h1).family, color: '#16171d', margin: '0 0 1rem 0' }}>
-                        {ROLE_SAMPLES.h1}
-                      </h1>
+                      
+                      <div className="mockup-browser-body" style={{ padding: '1.25rem 1rem', gap: '1rem' }}>
+                        {/* Navbar */}
+                        <nav className="mockup-nav" style={{ paddingBottom: '0.5rem', fontSize: '0.65rem' }}>
+                          <span className="mockup-nav-logo">BRANDING SYNC</span>
+                          <div className="mockup-nav-links">
+                            <span>Inicio</span>
+                            <span>Servicios</span>
+                          </div>
+                        </nav>
+                        
+                        {/* Hero Section */}
+                        <div className="mockup-hero">
+                          <span className="font-spec-badge h1-badge" style={{ fontSize: '0.52rem', padding: '0.1rem 0.35rem' }}>H1 — {getFontName(selectedCollaborator.selections.h1)}</span>
+                          <h1 className="consensus-h1" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h1).family, color: '#16171d', fontSize: '1.35rem', margin: '0 0 0.5rem 0', lineHeight: 1.25 }}>
+                            {ROLE_SAMPLES.h1}
+                          </h1>
 
-                      <span className="font-spec-badge h2-badge" style={{ marginTop: '0.5rem' }}>H2 — {getFontName(selectedCollaborator.selections.h2)} ({getFontObj(selectedCollaborator.selections.h2).type})</span>
-                      <h2 className="consensus-h2" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h2).family, color: '#4f628d', margin: '0 0 1rem 0' }}>
-                        {ROLE_SAMPLES.h2}
-                      </h2>
+                          <span className="font-spec-badge h2-badge" style={{ marginTop: '0.25rem', fontSize: '0.52rem', padding: '0.1rem 0.35rem' }}>H2 — {getFontName(selectedCollaborator.selections.h2)}</span>
+                          <h2 className="consensus-h2" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h2).family, color: '#4f628d', fontSize: '0.95rem', margin: '0 0 0.5rem 0', lineHeight: 1.25 }}>
+                            {ROLE_SAMPLES.h2}
+                          </h2>
 
-                      <span className="font-spec-badge body-badge" style={{ marginTop: '0.5rem' }}>Texto — {getFontName(selectedCollaborator.selections.body)} ({getFontObj(selectedCollaborator.selections.body).type})</span>
-                      <p className="consensus-body" style={{ fontFamily: getFontObj(selectedCollaborator.selections.body).family, color: '#2e303a', margin: '0 0 1.25rem 0' }}>
-                        {ROLE_SAMPLES.body}
-                      </p>
+                          <span className="font-spec-badge body-badge" style={{ marginTop: '0.25rem', fontSize: '0.52rem', padding: '0.1rem 0.35rem' }}>Texto — {getFontName(selectedCollaborator.selections.body)}</span>
+                          <p className="consensus-body" style={{ fontFamily: getFontObj(selectedCollaborator.selections.body).family, color: '#2e303a', fontSize: '0.78rem', margin: '0 0 0.75rem 0', lineHeight: 1.4 }}>
+                            {ROLE_SAMPLES.body}
+                          </p>
 
-                      <button className="mockup-cta" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h2).family }}>
-                        Comenzar Proyecto
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2. Simulador de Instagram Post */}
-                <div className="mockup-insta-section" style={{ marginTop: '1.5rem' }}>
-                  <h4 className="mockup-section-title" style={{ color: '#16171d', fontSize: '0.9rem', marginBottom: '0.75rem' }}>Post de Redes Sociales (Instagram)</h4>
-                  <div className="instagram-post-container" style={{ margin: '0 auto', width: '100%', maxWidth: '280px' }}>
-                    <div className="insta-post-header">
-                      <div className="insta-avatar-story-ring">
-                        <div className="insta-avatar-image"></div>
-                      </div>
-                      <div className="insta-header-info">
-                        <span className="insta-username">marca.empresa</span>
-                        <span className="insta-location">Estudio de Diseño</span>
-                      </div>
-                      <div className="insta-options-dot">•••</div>
-                    </div>
-                    <div className="insta-image-area">
-                      <span className="insta-graphic-quote-mark">“</span>
-                      <p className="insta-graphic-text" style={{ fontFamily: getFontObj(selectedCollaborator.selections.instagram).family, fontSize: '1rem' }}>
-                        {ROLE_SAMPLES.instagram}
-                      </p>
-                      <div className="insta-graphic-badge">
-                        <span>{getFontName(selectedCollaborator.selections.instagram)}</span>
-                      </div>
-                    </div>
-                    <div className="insta-action-bar">
-                      <div className="insta-left-actions">
-                        <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                        <svg className="insta-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                        </svg>
+                          <button className="mockup-cta" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h2).family, padding: '0.4rem 0.9rem', fontSize: '0.72rem' }}>
+                            Comenzar Proyecto
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {modalTab === 'instagram' && (
+                  <div className="animate-fade-in" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                    {/* Simulador de Instagram Post */}
+                    <div className="instagram-post-container" style={{ margin: '0 auto', width: '100%', maxWidth: '270px', boxShadow: 'none', border: '1px solid rgba(79, 98, 141, 0.12)' }}>
+                      <div className="insta-post-header">
+                        <div className="insta-avatar-story-ring">
+                          <div className="insta-avatar-image"></div>
+                        </div>
+                        <div className="insta-header-info">
+                          <span className="insta-username">marca.empresa</span>
+                          <span className="insta-location">Estudio de Diseño</span>
+                        </div>
+                        <div className="insta-options-dot">•••</div>
+                      </div>
+                      <div className="insta-image-area">
+                        <span className="insta-graphic-quote-mark">“</span>
+                        <p className="insta-graphic-text" style={{ fontFamily: getFontObj(selectedCollaborator.selections.instagram).family, fontSize: '0.95rem' }}>
+                          {ROLE_SAMPLES.instagram}
+                        </p>
+                        <div className="insta-graphic-badge">
+                          <span>{getFontName(selectedCollaborator.selections.instagram)}</span>
+                        </div>
+                      </div>
+                      <div className="insta-action-bar">
+                        <div className="insta-left-actions">
+                          <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                          </svg>
+                          <svg className="insta-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
