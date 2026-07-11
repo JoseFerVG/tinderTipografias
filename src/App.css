@@ -1106,6 +1106,147 @@
   width: 100%;
 }
 
+/* Tinder Stats Cards */
+.swipe-tops-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .swipe-tops-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.swipe-top-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.swipe-top-header {
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(79, 98, 141, 0.1);
+  text-align: left;
+}
+
+.swipe-top-header.likes {
+  color: #8fb186;
+}
+
+.swipe-top-header.nopes {
+  color: #d96a73;
+}
+
+.no-votes-yet {
+  font-size: 0.85rem;
+  color: #4f628d;
+  opacity: 0.7;
+  padding: 1rem 0;
+  font-weight: 500;
+  text-align: left;
+}
+
+.swipe-top-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.swipe-top-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(79, 98, 141, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.75rem;
+  transition: var(--transition-smooth);
+}
+
+.swipe-top-item:hover {
+  background: #ffffff;
+  border-color: rgba(79, 98, 141, 0.18);
+  box-shadow: 0 2px 8px rgba(79, 98, 141, 0.03);
+}
+
+.swipe-rank {
+  font-size: 0.78rem;
+  font-weight: 800;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.swipe-rank.font-likes {
+  background: rgba(143, 177, 134, 0.15);
+  color: #8fb186;
+}
+
+.swipe-rank.font-nopes {
+  background: rgba(217, 106, 115, 0.15);
+  color: #d96a73;
+}
+
+.swipe-font-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.swipe-font-info .font-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #16171d;
+}
+
+.swipe-font-info .font-cat {
+  font-size: 0.68rem;
+  color: #4f628d;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.swipe-count {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.swipe-count.likes {
+  color: #8fb186;
+}
+
+.swipe-count.nopes {
+  color: #d96a73;
+}
+
+.all-swipes-scroll {
+  scrollbar-width: thin;
+}
+
+.all-swipes-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.all-swipes-scroll::-webkit-scrollbar-thumb {
+  background: rgba(79, 98, 141, 0.15);
+  border-radius: 3px;
+}
+
 /* ================= RESPONSIVE DESIGN ================= */
 
 /* Tablets y pantallas medianas */

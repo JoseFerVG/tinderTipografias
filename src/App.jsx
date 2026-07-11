@@ -198,7 +198,9 @@ function App() {
         h2: assignedH2,
         instagram: assignedInstagram,
         body: assignedBody
-      }
+      },
+      likes: likedFonts,
+      dislikes: dislikedFonts
     };
 
     const updated = [...responses, newResponse];
@@ -307,7 +309,58 @@ function App() {
     return winners;
   };
 
-  const winners = getConsensusWinners();
+    const winners = getConsensusWinners();
+
+    // Calcular las estadísticas de "Likes" (Deslizados a la derecha) y "Nopes" (Deslizados a la izquierda)
+    const getSwipeStats = () => {
+      const stats = {};
+      FONTS_DATA.forEach(f => {
+        stats[f.id] = {
+          fontId: f.id,
+          fontName: f.name,
+          category: f.category,
+          likes: 0,
+          dislikes: 0
+        };
+      });
+
+      responses.forEach(r => {
+        const likes = r.likes || [];
+        const dislikes = r.dislikes || [];
+        likes.forEach(id => {
+          if (stats[id]) stats[id].likes += 1;
+        });
+        dislikes.forEach(id => {
+          if (stats[id]) stats[id].dislikes += 1;
+        });
+      });
+
+      const statsList = Object.values(stats).map(s => {
+        const total = s.likes + s.dislikes;
+        const likePercent = total > 0 ? Math.round((s.likes / total) * 100) : 0;
+        const dislikePercent = total > 0 ? Math.round((s.dislikes / total) * 100) : 0;
+        return {
+          ...s,
+          total,
+          likePercent,
+          dislikePercent
+        };
+      });
+
+      const topLikes = [...statsList]
+        .filter(s => s.likes > 0)
+        .sort((a, b) => b.likes - a.likes || b.likePercent - a.likePercent)
+        .slice(0, 5);
+
+      const topNopes = [...statsList]
+        .filter(s => s.dislikes > 0)
+        .sort((a, b) => b.dislikes - a.dislikes || b.dislikePercent - a.dislikePercent)
+        .slice(0, 5);
+
+      return { statsList, topLikes, topNopes };
+    };
+
+    const { statsList, topLikes, topNopes } = getSwipeStats();
 
   return (
     <>
@@ -899,6 +952,95 @@ function App() {
                               </div>
                             ))}
                           </div>
+                        </div>
+                      </div>
+                    </section>
+
+                    {/* Estadísticas de Deslizamiento (Tinder Stats) */}
+                    <section className="dashboard-card">
+                      <h3>Estadísticas de Deslizamiento (Tinder)</h3>
+                      <p style={{ color: '#4f628d', fontWeight: 500, fontSize: '0.92rem', marginBottom: '1.5rem', opacity: 0.9 }}>
+                        Análisis de las tipografías más deslizadas a la derecha (Me gusta) y a la izquierda (Descartadas).
+                      </p>
+
+                      <div className="swipe-tops-container">
+                        <div className="swipe-top-column">
+                          <h4 className="swipe-top-header likes">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                            Top 5 Más Queridas (Likes)
+                          </h4>
+                          {topLikes.length === 0 ? (
+                            <p className="no-votes-yet">Sin likes registrados</p>
+                          ) : (
+                            <div className="swipe-top-list">
+                              {topLikes.map((s, idx) => (
+                                <div key={s.fontId} className="swipe-top-item">
+                                  <span className="swipe-rank font-likes">{idx + 1}</span>
+                                  <div className="swipe-font-info">
+                                    <span className="font-name">{s.fontName}</span>
+                                    <span className="font-cat">{s.category}</span>
+                                  </div>
+                                  <span className="swipe-count likes">{s.likes} 👍 ({s.likePercent}%)</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="swipe-top-column">
+                          <h4 className="swipe-top-header nopes">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="3" style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }}>
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                            Top 5 Más Descartadas (Nopes)
+                          </h4>
+                          {topNopes.length === 0 ? (
+                            <p className="no-votes-yet">Sin descartes registrados</p>
+                          ) : (
+                            <div className="swipe-top-list">
+                              {topNopes.map((s, idx) => (
+                                <div key={s.fontId} className="swipe-top-item">
+                                  <span className="swipe-rank font-nopes">{idx + 1}</span>
+                                  <div className="swipe-font-info">
+                                    <span className="font-name">{s.fontName}</span>
+                                    <span className="font-cat">{s.category}</span>
+                                  </div>
+                                  <span className="swipe-count nopes">{s.dislikes} 👎 ({s.dislikePercent}%)</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Lista de todas las fuentes y sus porcentajes de aceptación */}
+                      <div className="all-swipes-list-container" style={{ marginTop: '2rem', borderTop: '1px solid rgba(79,98,141,0.1)', paddingTop: '1.5rem' }}>
+                        <h4 className="tally-title" style={{ marginBottom: '1rem' }}>Porcentajes de Aceptación General</h4>
+                        <div className="all-swipes-scroll" style={{ maxHeight: '300px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                          {statsList.filter(s => s.total > 0).length === 0 ? (
+                            <p style={{ fontSize: '0.88rem', color: '#4f628d', opacity: 0.8, textAlign: 'center', padding: '1rem' }}>No hay estadísticas disponibles todavía.</p>
+                          ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                              {statsList
+                                .filter(s => s.total > 0)
+                                .sort((a, b) => b.likePercent - a.likePercent || b.likes - a.likes)
+                                .map(s => (
+                                  <div key={s.fontId} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem', fontWeight: 600 }}>
+                                      <span style={{ color: '#16171d' }}>{s.fontName} <span style={{ fontSize: '0.7rem', color: '#4f628d', fontWeight: 500 }}>({s.category})</span></span>
+                                      <span style={{ color: '#4f628d' }}>{s.likePercent}% Likes ({s.likes}/{s.total})</span>
+                                    </div>
+                                    <div style={{ display: 'flex', height: '8px', borderRadius: '4px', overflow: 'hidden', background: 'rgba(79,98,141,0.1)' }}>
+                                      <div style={{ width: `${s.likePercent}%`, backgroundColor: '#8fb186', height: '100%' }} />
+                                      <div style={{ width: `${s.dislikePercent}%`, backgroundColor: '#d96a73', height: '100%' }} />
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </section>
