@@ -1105,3 +1105,246 @@
   text-align: center;
   width: 100%;
 }
+
+/* ================= RESPONSIVE DESIGN ================= */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1.5rem 1rem;
+  }
+  .brand-logo {
+    font-size: 2.1rem;
+  }
+  .glass-card {
+    padding: 2rem 1.5rem;
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .consensus-preview-box {
+    padding: 1.75rem;
+  }
+}
+
+/* Teléfonos y pantallas móviles pequeñas */
+@media (max-width: 480px) {
+  .app-header {
+    margin-bottom: 1.25rem;
+  }
+  .brand-logo {
+    font-size: 1.8rem;
+  }
+  .brand-subtitle {
+    font-size: 0.82rem;
+  }
+  .glass-card {
+    padding: 1.5rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+  .login-screen h2 {
+    font-size: 1.5rem;
+  }
+  .login-screen p {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-input {
+    padding: 0.9rem 1.1rem;
+    font-size: 0.95rem;
+  }
+  .btn-primary {
+    padding: 0.9rem 1.8rem;
+    font-size: 0.95rem;
+    width: 100%;
+  }
+  
+  /* Swiper Ajustado para evitar desbordamiento vertical */
+  .progress-container {
+    margin-bottom: 1rem;
+  }
+  .static-controls-panel {
+    padding: 1rem !important;
+    margin-bottom: 1rem;
+    border-radius: var(--radius-md);
+  }
+  .preview-tabs {
+    border-radius: 8px;
+  }
+  .tab-btn {
+    font-size: 0.68rem;
+    padding: 0.45rem 0.15rem;
+  }
+  .color-swatch {
+    width: 26px;
+    height: 26px;
+  }
+  
+  .card-stack {
+    height: 330px;
+    margin-bottom: 1rem;
+  }
+  .tinder-card {
+    border-radius: var(--radius-md);
+  }
+  .card-info {
+    padding: 0.9rem 1.1rem;
+  }
+  .font-title {
+    font-size: 1.25rem;
+  }
+  .font-category {
+    font-size: 0.7rem;
+  }
+  .font-type-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+  
+  .preview-display {
+    min-height: 140px;
+    padding: 1rem;
+  }
+  .preview-h1 {
+    font-size: 1.6rem;
+  }
+  .preview-h2 {
+    font-size: 1.2rem;
+  }
+  .preview-insta {
+    max-width: 180px;
+    padding: 1rem;
+  }
+  .preview-insta-quote {
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+  }
+  .preview-body {
+    font-size: 0.8rem;
+    max-height: 100px;
+  }
+  .card-description-footer {
+    padding: 0.8rem 1.1rem;
+    font-size: 0.75rem;
+  }
+  
+  .action-buttons {
+    gap: 1rem;
+  }
+  .action-btn {
+    width: 52px;
+    height: 52px;
+  }
+  .action-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .shortcuts-tip {
+    font-size: 0.7rem;
+    margin-top: 0.75rem;
+  }
+
+  /* Asignación y Dashboard en Móvil */
+  .assignment-screen h2 {
+    font-size: 1.5rem;
+  }
+  .assignment-screen p {
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+  }
+  .assignment-item {
+    padding: 1.25rem;
+    gap: 1rem;
+    border-radius: var(--radius-md);
+  }
+  .assignment-role {
+    font-size: 1rem;
+  }
+  .assignment-role-desc {
+    font-size: 0.78rem;
+  }
+  .assignment-select {
+    font-size: 0.9rem;
+    padding: 0.75rem 2rem 0.75rem 1rem;
+  }
+  .role-live-preview {
+    font-size: 1.15rem;
+    padding: 1rem;
+  }
+  
+  .dashboard-screen h2 {
+    font-size: 1.6rem;
+  }
+  .dashboard-screen p {
+    font-size: 0.88rem;
+  }
+  .dashboard-card {
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+  }
+  .dashboard-card h3 {
+    font-size: 1.1rem;
+  }
+  .consensus-preview-box {
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
+  .consensus-h1 {
+    font-size: 1.6rem;
+  }
+  .consensus-h2 {
+    font-size: 1.2rem;
+  }
+  .consensus-insta {
+    padding: 0.75rem;
+  }
+  .consensus-body {
+    font-size: 0.85rem;
+  }
+  .tally-font-name {
+    width: 100px;
+    font-size: 0.8rem;
+  }
+  .tally-count {
+    font-size: 0.75rem;
+    width: 40px;
+  }
+  .history-item {
+    padding: 1rem;
+  }
+  .history-selections {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .history-sel-tag {
+    font-size: 0.75rem;
+  }
+  .btn-secondary, .btn-danger {
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+    width: 100%;
+  }
+  .dashboard-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+}
+
+/* Pantallas extremadamente cortas verticalmente (ej. móviles en horizontal) */
+@media (max-height: 600px) and (orientation: landscape) {
+  .app-container {
+    padding: 1rem;
+  }
+  .app-header {
+    margin-bottom: 1rem;
+  }
+  .static-controls-panel {
+    max-width: 600px;
+  }
+  .card-stack {
+    height: 280px;
+    max-width: 600px;
+  }
+}
