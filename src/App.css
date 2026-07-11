@@ -502,52 +502,179 @@
   padding: 0 0.5rem;
 }
 
-.preview-insta {
+/* Instagram High-Fidelity Mockup */
+.instagram-post-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 250px;
-  aspect-ratio: 1;
-  background: #121318;
+  background: #ffffff;
+  border: 1px solid rgba(79, 98, 141, 0.15);
   border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 320px;
+  color: #1c1e21;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   text-align: left;
-  position: relative;
 }
 
-.preview-insta-quote {
-  font-size: 1.15rem;
-  line-height: 1.35;
-  font-weight: 600;
-  color: #ffffff;
-  margin-top: 1rem;
-  word-wrap: break-word;
-}
-
-.preview-insta-footer {
+.insta-post-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 0.5rem;
-  margin-top: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.preview-insta-avatar {
+.insta-avatar-story-ring {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  padding: 1.5px;
+  background: linear-gradient(45deg, #f78041, #d96a73, #6a8dd3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.6rem;
+  flex-shrink: 0;
+}
+
+.insta-avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #c1d0e0;
+  border: 1.5px solid #ffffff;
+}
+
+.insta-header-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.insta-username {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #16171d;
+  line-height: 1.2;
+}
+
+.insta-location {
+  font-size: 0.6rem;
+  color: #8fb186;
+  font-weight: 600;
+}
+
+.insta-options-dot {
+  font-size: 0.8rem;
+  color: #4f628d;
+  cursor: pointer;
+  letter-spacing: -0.5px;
+}
+
+.insta-image-area {
+  width: 100%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #4f628d, #6a8dd3, #c1d0e0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.insta-graphic-quote-mark {
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.18);
+  position: absolute;
+  top: 0.5rem;
+  left: 1rem;
+}
+
+.insta-graphic-text {
+  font-size: 1.1rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  z-index: 2;
+  word-break: break-word;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  margin: 0;
+  padding: 0 0.5rem;
+}
+
+.insta-graphic-badge {
+  position: absolute;
+  bottom: 0.75rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.insta-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+}
+
+.insta-left-actions {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.insta-action-icon {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f78041, #d96a73);
+  cursor: pointer;
+  color: #16171d;
+  transition: transform 0.15s ease;
 }
 
-.preview-insta-handle {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.7rem;
+.insta-action-icon:hover {
+  transform: scale(1.1);
+}
+
+.insta-action-icon.heart {
+  color: #d96a73;
+}
+
+.insta-likes-caption {
+  padding: 0 0.75rem 0.75rem 0.75rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #1c1e21;
+}
+
+.insta-likes-text {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.insta-caption-text strong {
+  margin-right: 0.3rem;
+}
+
+.insta-caption-body {
+  font-style: italic;
+  color: #2e303a;
+}
+
+.insta-hashtags {
+  color: #4f628d;
+  font-size: 0.65rem;
   font-weight: 600;
-  color: #c1d0e0;
+  margin-top: 0.25rem;
 }
 
 .preview-body {

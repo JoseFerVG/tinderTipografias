@@ -49,6 +49,8 @@ function App() {
   const [tournamentRound, setTournamentRound] = useState(1);
   const [tournamentTotalRounds, setTournamentTotalRounds] = useState(1);
   const [tournamentResults, setTournamentResults] = useState({ h1: '', h2: '', instagram: '', body: '' });
+  const [tournamentLikes, setTournamentLikes] = useState([]);
+  const [tournamentDislikes, setTournamentDislikes] = useState([]);
 
   // Historial global de respuestas
   const [responses, setResponses] = useState([]);
@@ -411,8 +413,18 @@ function App() {
       });
 
       responses.forEach(r => {
-        const likes = r.likes || [];
-        const dislikes = r.dislikes || [];
+        let likes = r.likes;
+        let dislikes = r.dislikes;
+
+        // Fallback para registros antiguos sin historial de swipes:
+        // Inferimos como "Likes" las fuentes asignadas a sus roles.
+        if (!likes) {
+          likes = Object.values(r.selections).filter(Boolean);
+        }
+        if (!dislikes) {
+          dislikes = [];
+        }
+
         likes.forEach(id => {
           if (stats[id]) stats[id].likes += 1;
         });
@@ -649,19 +661,49 @@ function App() {
                         )}
 
                         {activeTab === 'instagram' && (
-                          <div className="preview-insta">
-                            <p 
-                              className="preview-insta-quote" 
-                              style={{ fontFamily: font.family }}
-                            >
-                              {font.insta_sample}
-                            </p>
-                            <div className="preview-insta-footer">
-                              <div className="preview-insta-avatar"></div>
-                              <div>
-                                <div className="preview-insta-handle">@marca.empresa</div>
-                                <div style={{ fontSize: '0.6rem', color: '#c1d0e0', opacity: 0.5 }}>Tipografía: {font.name}</div>
+                          <div className="instagram-post-container" style={{ margin: '0 auto' }}>
+                            <div className="insta-post-header">
+                              <div className="insta-avatar-story-ring">
+                                <div className="insta-avatar-image"></div>
                               </div>
+                              <div className="insta-header-info">
+                                <span className="insta-username">marca.empresa</span>
+                                <span className="insta-location">Estudio de Diseño</span>
+                              </div>
+                              <div className="insta-options-dot">•••</div>
+                            </div>
+                            <div className="insta-image-area">
+                              <span className="insta-graphic-quote-mark">“</span>
+                              <p className="insta-graphic-text" style={{ fontFamily: font.family }}>
+                                {font.insta_sample}
+                              </p>
+                              <div className="insta-graphic-badge">
+                                <span>{font.name}</span>
+                              </div>
+                            </div>
+                            <div className="insta-action-bar">
+                              <div className="insta-left-actions">
+                                <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                                <svg className="insta-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                </svg>
+                                <svg className="insta-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                              </div>
+                              <svg className="insta-action-icon bookmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                              </svg>
+                            </div>
+                            <div className="insta-likes-caption">
+                              <div className="insta-likes-text">Les gusta a <strong>josef</strong> y <strong>245 personas más</strong></div>
+                              <div className="insta-caption-text">
+                                <strong>marca.empresa</strong> <span className="insta-caption-body" style={{ fontFamily: font.family }}>{font.insta_sample}</span>
+                              </div>
+                              <div className="insta-hashtags">#branding #typography #typematch</div>
                             </div>
                           </div>
                         )}
@@ -770,15 +812,31 @@ function App() {
                         </h2>
                       )}
                       {tournamentRole === 'instagram' && (
-                        <div className="preview-insta" style={{ width: '100%', pointerEvents: 'none' }}>
-                          <p className="preview-insta-quote" style={{ fontFamily: fontLeft.family, fontSize: '0.95rem', margin: '0 0 0.75rem 0' }}>
-                            {ROLE_SAMPLES.instagram}
-                          </p>
-                          <div className="preview-insta-footer">
-                            <div className="preview-insta-avatar"></div>
-                            <div>
-                              <div className="preview-insta-handle">@marca.empresa</div>
-                              <div style={{ fontSize: '0.55rem', color: '#c1d0e0', opacity: 0.5 }}>Fuente: {fontLeft.name}</div>
+                        <div className="instagram-post-container" style={{ margin: '0 auto', pointerEvents: 'none' }}>
+                          <div className="insta-post-header">
+                            <div className="insta-avatar-story-ring">
+                              <div className="insta-avatar-image"></div>
+                            </div>
+                            <div className="insta-header-info">
+                              <span className="insta-username">marca.empresa</span>
+                              <span className="insta-location">Estudio de Diseño</span>
+                            </div>
+                            <div className="insta-options-dot">•••</div>
+                          </div>
+                          <div className="insta-image-area">
+                            <span className="insta-graphic-quote-mark">“</span>
+                            <p className="insta-graphic-text" style={{ fontFamily: fontLeft.family, fontSize: '1rem' }}>
+                              {ROLE_SAMPLES.instagram}
+                            </p>
+                            <div className="insta-graphic-badge">
+                              <span>{fontLeft.name}</span>
+                            </div>
+                          </div>
+                          <div className="insta-action-bar">
+                            <div className="insta-left-actions">
+                              <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                              </svg>
                             </div>
                           </div>
                         </div>
@@ -824,15 +882,31 @@ function App() {
                         </h2>
                       )}
                       {tournamentRole === 'instagram' && (
-                        <div className="preview-insta" style={{ width: '100%', pointerEvents: 'none' }}>
-                          <p className="preview-insta-quote" style={{ fontFamily: fontRight.family, fontSize: '0.95rem', margin: '0 0 0.75rem 0' }}>
-                            {ROLE_SAMPLES.instagram}
-                          </p>
-                          <div className="preview-insta-footer">
-                            <div className="preview-insta-avatar"></div>
-                            <div>
-                              <div className="preview-insta-handle">@marca.empresa</div>
-                              <div style={{ fontSize: '0.55rem', color: '#c1d0e0', opacity: 0.5 }}>Fuente: {fontRight.name}</div>
+                        <div className="instagram-post-container" style={{ margin: '0 auto', pointerEvents: 'none' }}>
+                          <div className="insta-post-header">
+                            <div className="insta-avatar-story-ring">
+                              <div className="insta-avatar-image"></div>
+                            </div>
+                            <div className="insta-header-info">
+                              <span className="insta-username">marca.empresa</span>
+                              <span className="insta-location">Estudio de Diseño</span>
+                            </div>
+                            <div className="insta-options-dot">•••</div>
+                          </div>
+                          <div className="insta-image-area">
+                            <span className="insta-graphic-quote-mark">“</span>
+                            <p className="insta-graphic-text" style={{ fontFamily: fontRight.family, fontSize: '1rem' }}>
+                              {ROLE_SAMPLES.instagram}
+                            </p>
+                            <div className="insta-graphic-badge">
+                              <span>{fontRight.name}</span>
+                            </div>
+                          </div>
+                          <div className="insta-action-bar">
+                            <div className="insta-left-actions">
+                              <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                              </svg>
                             </div>
                           </div>
                         </div>
@@ -941,15 +1015,34 @@ function App() {
                         <div className="mockup-insta-section">
                           <h4 className="mockup-section-title">Post de Redes Sociales (Instagram)</h4>
                           <div className="mockup-insta-card-container">
-                            <div className="preview-insta" style={{ margin: '0 auto', width: '100%', maxWidth: '280px' }}>
-                              <p className="preview-insta-quote" style={{ fontFamily: getFontObj(winners.instagram).family }}>
-                                {ROLE_SAMPLES.instagram}
-                              </p>
-                              <div className="preview-insta-footer">
-                                <div className="preview-insta-avatar"></div>
-                                <div>
-                                  <div className="preview-insta-handle">@marca.empresa</div>
-                                  <div style={{ fontSize: '0.6rem', color: '#c1d0e0', opacity: 0.65 }}>Instagram: {getFontName(winners.instagram)}</div>
+                            <div className="instagram-post-container" style={{ margin: '0 auto', width: '100%', maxWidth: '280px' }}>
+                              <div className="insta-post-header">
+                                <div className="insta-avatar-story-ring">
+                                  <div className="insta-avatar-image"></div>
+                                </div>
+                                <div className="insta-header-info">
+                                  <span className="insta-username">marca.empresa</span>
+                                  <span className="insta-location">Estudio de Diseño</span>
+                                </div>
+                                <div className="insta-options-dot">•••</div>
+                              </div>
+                              <div className="insta-image-area">
+                                <span className="insta-graphic-quote-mark">“</span>
+                                <p className="insta-graphic-text" style={{ fontFamily: getFontObj(winners.instagram).family, fontSize: '1rem' }}>
+                                  {ROLE_SAMPLES.instagram}
+                                </p>
+                                <div className="insta-graphic-badge">
+                                  <span>{getFontName(winners.instagram)}</span>
+                                </div>
+                              </div>
+                              <div className="insta-action-bar">
+                                <div className="insta-left-actions">
+                                  <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                  </svg>
+                                  <svg className="insta-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                  </svg>
                                 </div>
                               </div>
                             </div>
