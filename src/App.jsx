@@ -22,6 +22,11 @@ const ROLE_SAMPLES = {
   body: 'La tipografía es el pilar invisible del diseño web. Una buena elección tipográfica no solo mejora la legibilidad, sino que también transmite la personalidad, el profesionalismo y los valores centrales de una corporación.'
 };
 
+// Helper para decidir si el color seleccionado es claro o oscuro para adaptar el fondo del preview canvas
+const isLightColor = (color) => {
+  return ['#f9fcfd', '#c1d0e0', '#f8a861', '#8fb186'].includes(color);
+};
+
 function App() {
   // Estados de navegación y usuario
   const [screen, setScreen] = useState('LOGIN'); // 'LOGIN', 'SWIPER', 'ASSIGN', 'DASHBOARD'
@@ -397,7 +402,15 @@ function App() {
                       </div>
 
                       {/* Caja de Visualización */}
-                      <div className="preview-display">
+                      <div 
+                        className="preview-display"
+                        style={{ 
+                          backgroundColor: isLightColor(textColor) ? '#181920' : '#f9fcfd',
+                          borderRadius: '12px',
+                          border: isLightColor(textColor) ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(79,98,141,0.15)',
+                          transition: 'background-color 0.3s ease, border-color 0.3s ease'
+                        }}
+                      >
                         {activeTab === 'h1' && (
                           <h1 
                             className="preview-h1" 
