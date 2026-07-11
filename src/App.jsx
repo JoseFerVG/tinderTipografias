@@ -37,11 +37,11 @@ function App() {
   const [likedFonts, setLikedFonts] = useState([]);
   const [dislikedFonts, setDislikedFonts] = useState([]);
   const [swipeDirection, setSwipeDirection] = useState(null); // 'left', 'right', or null
+  const [activeStamp, setActiveStamp] = useState(null); // 'LIKE', 'NOPE', or null
   const [activeTab, setActiveTab] = useState('h1'); // 'h1', 'h2', 'instagram', 'body'
   
-  // Controles visuales (Text color y Filtro)
+  // Controles visuales estáticos (Text color)
   const [textColor, setTextColor] = useState(COLORS[4]); // Slate blue por defecto
-  const [applyBgFilter, setApplyBgFilter] = useState(false);
 
   // Estados de asignación de roles
   const [assignedH1, setAssignedH1] = useState('');
@@ -84,10 +84,6 @@ function App() {
         const nextIdx = (tabs.indexOf(activeTab) + 1) % tabs.length;
         setActiveTab(tabs[nextIdx]);
       }
-      // Activar / Desactivar filtro de fondo con 'f'
-      else if (e.key.toLowerCase() === 'f') {
-        setApplyBgFilter(prev => !prev);
-      }
       // Seleccionar color con números 1-8
       else if (e.key >= '1' && e.key <= '8') {
         const colorIdx = parseInt(e.key) - 1;
@@ -99,19 +95,19 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [screen, currentIndex, activeTab]);
+  }, [screen, currentIndex, activeTab, textColor, likedFonts, dislikedFonts, swipeDirection]);
 
   // Manejar el login
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     if (!username.trim()) return;
     
-    // Si ya hay respuestas de este usuario, las podemos sobreescribir o simplemente crear una nueva
     setScreen('SWIPER');
     setCurrentIndex(0);
     setLikedFonts([]);
     setDislikedFonts([]);
     setSwipeDirection(null);
+    setActiveStamp(null);
   };
 
   // Manejar el voto (Swipe)
@@ -119,6 +115,7 @@ function App() {
     if (swipeDirection !== null) return; // Esperar a que termine la animación actual
 
     const currentFont = FONTS_DATA[currentIndex];
+    setActiveStamp(isLike ? 'LIKE' : 'NOPE');
     setSwipeDirection(isLike ? 'right' : 'left');
 
     setTimeout(() => {
@@ -129,12 +126,12 @@ function App() {
       }
 
       setSwipeDirection(null);
+      setActiveStamp(null);
       
       if (currentIndex < FONTS_DATA.length - 1) {
         setCurrentIndex(prev => prev + 1);
       } else {
         // Fin de la lista de fuentes -> Pasar a asignación de roles
-        // Auto-seleccionar candidatos por defecto en la pantalla de asignación
         const liked = [...likedFonts, isLike ? currentFont.id : null].filter(Boolean);
         const fallbackFont = liked.length > 0 ? liked[0] : FONTS_DATA[0].id;
         
@@ -145,7 +142,7 @@ function App() {
         
         setScreen('ASSIGN');
       }
-    }, 350); // Duración de la animación en milisegundos
+    }, 380); // Duración de la animación en milisegundos
   };
 
   // Guardar asignación de roles y ver resultados
@@ -251,16 +248,6 @@ function App() {
 
   return (
     <>
-      {/* Filtro de Color en Fondo de la pantalla */}
-      <div 
-        className="background-filter-overlay" 
-        style={{ 
-          backgroundColor: applyBgFilter ? `${textColor}1C` : 'transparent',
-          backdropFilter: applyBgFilter ? 'blur(10px) saturate(110%)' : 'none',
-          WebkitBackdropFilter: applyBgFilter ? 'blur(10px) saturate(110%)' : 'none'
-        }}
-      />
-
       <div className="app-container">
         {/* Cabecera Principal */}
         <header className="app-header">
@@ -310,7 +297,7 @@ function App() {
             </form>
             
             {responses.length > 0 && (
-              <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '1.25rem' }}>
+              <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(79,98,141,0.1)', paddingTop: '1.25rem' }}>
                 <button 
                   className="btn-secondary" 
                   style={{ width: '100%', padding: '0.75rem' }} 
@@ -326,6 +313,7 @@ function App() {
         {/* ---------------- SWIPER (TINDER) SCREEN ---------------- */}
         {screen === 'SWIPER' && (
           <main className="swiper-screen animate-fade-in">
+            {/* Barra de Progreso */}
             <div className="progress-container">
               <div className="progress-header">
                 <span>Tipografía {currentIndex + 1} de {FONTS_DATA.length}</span>
@@ -339,11 +327,61 @@ function App() {
               </div>
             </div>
 
-            {/* Pila de Tarjetas */}
+            {/* CONTROLES ESTÁTICOS (FUERA DE LA TARJETA QUE SE DESLIZA) */}
+            <div className="static-controls-panel glass-card">
+              {/* Selector de Pestañas de Muestra */}
+              <div className="control-group">
+                <label className="control-label">Elemento a previsualizar</label>
+                <div className="preview-tabs">
+                  <button 
+                    className={`tab-btn ${activeTab === 'h1' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('h1')}
+                  >
+                    H1 (Título)
+                  </button>
+                  <button 
+                    className={`tab-btn ${activeTab === 'h2' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('h2')}
+                  >
+                    H2 (Subtítulo)
+                  </button>
+                  <button 
+                    className={`tab-btn ${activeTab === 'instagram' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('instagram')}
+                  >
+                    Instagram
+                  </button>
+                  <button 
+                    className={`tab-btn ${activeTab === 'body' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('body')}
+                  >
+                    Cuerpo
+                  </button>
+                </div>
+              </div>
+
+              {/* Selector de Color de Texto */}
+              <div className="control-group" style={{ marginTop: '0.5rem' }}>
+                <label className="control-label">Color de Texto de Muestra</label>
+                <div className="colors-grid">
+                  {COLORS.map(color => (
+                    <button
+                      key={color}
+                      className={`color-swatch ${textColor === color ? 'active' : ''}`}
+                      style={{ backgroundColor: color }}
+                      onClick={() => setTextColor(color)}
+                      title={color}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* PILA DE TARJETAS TINDER (AHORA SOLO CONTIENEN LA FUENTE Y EL LIENZO) */}
             <div className="card-stack">
               <div className="card-container">
                 {FONTS_DATA.map((font, idx) => {
-                  // Solo renderizar la tarjeta activa y una de fondo para rendimiento
+                  // Solo renderizamos la activa y la siguiente para optimizar rendimiento
                   if (idx < currentIndex || idx > currentIndex + 1) return null;
                   
                   const isActive = idx === currentIndex;
@@ -354,7 +392,7 @@ function App() {
                   } : {
                     transform: 'scale(0.96) translateY(12px)',
                     zIndex: 1,
-                    opacity: 0.6,
+                    opacity: 0.5,
                     pointerEvents: 'none'
                   };
 
@@ -364,7 +402,14 @@ function App() {
                       className={`tinder-card ${isActive && swipeDirection ? `swipe-${swipeDirection}` : ''}`}
                       style={cardStyle}
                     >
-                      {/* Info de la Fuente */}
+                      {/* Sello de Tinder interactivo */}
+                      {isActive && activeStamp && (
+                        <div className={`card-stamp ${activeStamp.toLowerCase()}`}>
+                          {activeStamp === 'LIKE' ? 'ME GUSTA' : 'NOPE'}
+                        </div>
+                      )}
+
+                      {/* Header de la Tarjeta */}
                       <div className="card-info">
                         <div className="font-meta">
                           <h2 className="font-title">{font.name}</h2>
@@ -373,41 +418,13 @@ function App() {
                         <span className="font-type-tag">{font.type}</span>
                       </div>
 
-                      {/* Selector de Previsualización */}
-                      <div className="preview-tabs">
-                        <button 
-                          className={`tab-btn ${activeTab === 'h1' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('h1')}
-                        >
-                          H1 (Título)
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab === 'h2' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('h2')}
-                        >
-                          H2 (Subtítulo)
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab === 'instagram' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('instagram')}
-                        >
-                          Instagram
-                        </button>
-                        <button 
-                          className={`tab-btn ${activeTab === 'body' ? 'active' : ''}`}
-                          onClick={() => setActiveTab('body')}
-                        >
-                          Cuerpo
-                        </button>
-                      </div>
-
-                      {/* Caja de Visualización */}
+                      {/* Lienzo de Muestra de la Fuente */}
                       <div 
                         className="preview-display"
                         style={{ 
                           backgroundColor: isLightColor(textColor) ? '#181920' : '#f9fcfd',
-                          borderRadius: '12px',
-                          border: isLightColor(textColor) ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(79,98,141,0.15)',
+                          borderRadius: '0 0 12px 12px',
+                          border: isLightColor(textColor) ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(79,98,141,0.12)',
                           transition: 'background-color 0.3s ease, border-color 0.3s ease'
                         }}
                       >
@@ -455,48 +472,11 @@ function App() {
                             {font.body_sample}
                           </p>
                         )}
-
-                        {/* Pequeño texto descriptivo de la fuente */}
-                        <div className="font-description-tooltip">
-                          <strong>{font.name}:</strong> {font.description}
-                        </div>
                       </div>
 
-                      {/* Controles de Color y Filtro de Fondo */}
-                      <div className="card-controls">
-                        <div className="color-picker-section">
-                          <label className="control-label">Color de Texto</label>
-                          <div className="colors-grid">
-                            {COLORS.map(color => (
-                              <button
-                                key={color}
-                                className={`color-swatch ${textColor === color ? 'active' : ''}`}
-                                style={{ backgroundColor: color }}
-                                onClick={() => setTextColor(color)}
-                                title={color}
-                              />
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="filter-toggle-container">
-                          <label className="filter-toggle-label" htmlFor="bg-filter-toggle">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="12" cy="12" r="10" />
-                              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                            </svg>
-                            Filtro de Fondo de Color
-                          </label>
-                          <label className="switch">
-                            <input 
-                              id="bg-filter-toggle"
-                              type="checkbox" 
-                              checked={applyBgFilter}
-                              onChange={(e) => setApplyBgFilter(e.target.checked)}
-                            />
-                            <span className="slider"></span>
-                          </label>
-                        </div>
+                      {/* Descripción inferior fija dentro de la tarjeta */}
+                      <div className="card-description-footer">
+                        <strong>Descripción:</strong> {font.description}
                       </div>
                     </div>
                   );
@@ -504,7 +484,7 @@ function App() {
               </div>
             </div>
 
-            {/* Botones de Votación */}
+            {/* Botones de Votación Fijos */}
             <div className="action-buttons">
               <button 
                 className="action-btn dislike" 
@@ -528,7 +508,7 @@ function App() {
             </div>
 
             <div className="shortcuts-tip">
-              Atajos: ← No me gusta | → Me gusta | Espacio: Cambiar preview | 1-8: Cambiar color | F: Filtro de fondo
+              Atajos: ← No me gusta | → Me gusta | Espacio: Cambiar elemento | 1-8: Cambiar color
             </div>
           </main>
         )}
@@ -717,7 +697,7 @@ function App() {
                         Identidad Visual Resultante (Consenso)
                         <span>En base a {responses.length} {responses.length === 1 ? 'voto' : 'votos'}</span>
                       </h3>
-                      <p style={{ color: '#c1d0e0', opacity: 0.7, fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+                      <p style={{ color: '#4f628d', fontWeight: 500, fontSize: '0.92rem', marginBottom: '1.5rem', opacity: 0.9 }}>
                         Así es como se ven combinadas las fuentes más votadas por el equipo para cada rol:
                       </p>
 
@@ -766,7 +746,7 @@ function App() {
                         <div className="tally-category">
                           <h4 className="tally-title">H1 — Título Principal</h4>
                           <div className="tally-bars">
-                            {getTally('h1').slice(0, 4).map(item => (
+                            {getTally('h1').slice(0, 5).map(item => (
                               <div key={item.fontId} className="tally-row">
                                 <span className="tally-font-name">{item.fontName}</span>
                                 <div className="tally-bar-container">
@@ -787,10 +767,10 @@ function App() {
                         </div>
 
                         {/* Tally H2 */}
-                        <div className="tally-category" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.25rem' }}>
+                        <div className="tally-category" style={{ borderTop: '1px solid rgba(79,98,141,0.1)', paddingTop: '1.25rem' }}>
                           <h4 className="tally-title">H2 — Subtítulo</h4>
                           <div className="tally-bars">
-                            {getTally('h2').slice(0, 4).map(item => (
+                            {getTally('h2').slice(0, 5).map(item => (
                               <div key={item.fontId} className="tally-row">
                                 <span className="tally-font-name">{item.fontName}</span>
                                 <div className="tally-bar-container">
@@ -811,10 +791,10 @@ function App() {
                         </div>
 
                         {/* Tally Instagram */}
-                        <div className="tally-category" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.25rem' }}>
+                        <div className="tally-category" style={{ borderTop: '1px solid rgba(79,98,141,0.1)', paddingTop: '1.25rem' }}>
                           <h4 className="tally-title">Instagram</h4>
                           <div className="tally-bars">
-                            {getTally('instagram').slice(0, 4).map(item => (
+                            {getTally('instagram').slice(0, 5).map(item => (
                               <div key={item.fontId} className="tally-row">
                                 <span className="tally-font-name">{item.fontName}</span>
                                 <div className="tally-bar-container">
@@ -835,10 +815,10 @@ function App() {
                         </div>
 
                         {/* Tally Cuerpo */}
-                        <div className="tally-category" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1.25rem' }}>
+                        <div className="tally-category" style={{ borderTop: '1px solid rgba(79,98,141,0.1)', paddingTop: '1.25rem' }}>
                           <h4 className="tally-title">Cuerpo de Texto</h4>
                           <div className="tally-bars">
-                            {getTally('body').slice(0, 4).map(item => (
+                            {getTally('body').slice(0, 5).map(item => (
                               <div key={item.fontId} className="tally-row">
                                 <span className="tally-font-name">{item.fontName}</span>
                                 <div className="tally-bar-container">

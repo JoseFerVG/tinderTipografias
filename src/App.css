@@ -1,10 +1,10 @@
-/* App.css - Estilos específicos de la aplicación TypeMatch (Optimizado para fondo claro y alto contraste) */
+/* App.css - Estilos específicos de la aplicación TypeMatch (Optimizado para Tinder Mejorado y Sin Filtro de Fondo) */
 
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  padding: 2.5rem 1.5rem;
+  padding: 2rem 1.5rem;
   z-index: 2;
   position: relative;
   max-width: 1200px;
@@ -13,19 +13,10 @@
   align-items: center;
 }
 
-/* Filtro de fondo global */
-.background-filter-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  transition: background-color 0.6s ease, backdrop-filter 0.6s ease;
-}
-
 /* Header */
 .app-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   width: 100%;
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -46,7 +37,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-transform: uppercase;
-  text-shadow: 0 2px 10px rgba(79, 98, 141, 0.1);
+  text-shadow: 0 2px 10px rgba(79, 98, 141, 0.08);
 }
 
 .brand-dot {
@@ -127,13 +118,13 @@
 .login-screen h2 {
   font-size: 1.9rem;
   font-weight: 800;
-  color: #16171d; /* Texto muy oscuro */
+  color: #16171d;
   margin-bottom: 0.75rem;
   letter-spacing: -0.5px;
 }
 
 .login-screen p {
-  color: #4f628d; /* Contraste óptimo */
+  color: #4f628d;
   font-weight: 500;
   opacity: 0.95;
   font-size: 1rem;
@@ -162,7 +153,7 @@
   border: 1px solid rgba(79, 98, 141, 0.25);
   border-radius: var(--radius-md);
   padding: 1.1rem 1.3rem;
-  color: #16171d; /* Texto oscuro para máxima visibilidad */
+  color: #16171d;
   font-size: 1.05rem;
   font-weight: 500;
   transition: var(--transition-smooth);
@@ -220,7 +211,7 @@
 .progress-container {
   width: 100%;
   max-width: 520px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .progress-header {
@@ -248,12 +239,113 @@
   border-radius: 10px;
 }
 
+/* Panel de Controles Estáticos (Fijos arriba del Swiper) */
+.static-controls-panel {
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem 1.5rem !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid var(--color-glass-border) !important;
+  box-shadow: 0 10px 30px rgba(79, 98, 141, 0.08) !important;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  text-align: left;
+}
+
+.control-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #4f628d;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+/* Preview Tabs */
+.preview-tabs {
+  display: flex;
+  background: rgba(79, 98, 141, 0.06);
+  padding: 0.25rem;
+  border-radius: 10px;
+  border: 1px solid rgba(79, 98, 141, 0.08);
+  width: 100%;
+}
+
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #4f628d;
+  opacity: 0.75;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.5rem 0.3rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: var(--transition-smooth);
+}
+
+.tab-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: #16171d;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(79, 98, 141, 0.1);
+}
+
+/* Selector de Color */
+.colors-grid {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.2rem 0;
+  scrollbar-width: none;
+  width: 100%;
+}
+
+.colors-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.color-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.color-swatch.active {
+  border-color: #16171d;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2px rgba(79, 98, 141, 0.25);
+}
+
 /* Card Stack */
 .card-stack {
   position: relative;
   width: 100%;
   max-width: 520px;
-  height: 520px;
+  height: 380px; /* Reducido al sacar controles del interior */
   margin-bottom: 1.5rem;
 }
 
@@ -265,41 +357,82 @@
   perspective: 1000px;
 }
 
+/* Tinder Card Estilo Mejorado */
 .tinder-card {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: var(--color-glass-bg);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid var(--color-glass-border);
+  background: #ffffff;
+  border: 1px solid rgba(79, 98, 141, 0.15);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-premium);
+  box-shadow: 0 15px 35px rgba(79, 98, 141, 0.12), 0 3px 10px rgba(0,0,0,0.02);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15), opacity 0.4s ease;
   user-select: none;
 }
 
 /* Animaciones de Swipe */
 .tinder-card.swipe-left {
-  transform: translateX(-160%) rotate(-25deg) !important;
+  transform: translateX(-160%) rotate(-25deg) translateY(-20px) !important;
   opacity: 0 !important;
   pointer-events: none;
 }
 
 .tinder-card.swipe-right {
-  transform: translateX(160%) rotate(25deg) !important;
+  transform: translateX(160%) rotate(25deg) translateY(-20px) !important;
   opacity: 0 !important;
   pointer-events: none;
+}
+
+/* Sellos Tinder (STAMPS) */
+.card-stamp {
+  position: absolute;
+  top: 1.5rem;
+  font-size: 2rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  padding: 0.3rem 1rem;
+  border-radius: 8px;
+  border: 4px solid;
+  z-index: 10;
+  letter-spacing: 2px;
+  animation: stampFadeIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.card-stamp.like {
+  right: 2rem;
+  color: #8fb186;
+  border-color: #8fb186;
+  transform: rotate(15deg);
+  --rotation: 15deg;
+}
+
+.card-stamp.nope {
+  left: 2rem;
+  color: #d96a73;
+  border-color: #d96a73;
+  transform: rotate(-15deg);
+  --rotation: -15deg;
+}
+
+@keyframes stampFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(1.4) rotate(var(--rotation, 0deg));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(var(--rotation, 0deg));
+  }
 }
 
 /* Card Header */
 .card-info {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(79, 98, 141, 0.02);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -335,42 +468,6 @@
   border-radius: 50px;
 }
 
-/* Preview Tabs */
-.preview-tabs {
-  display: flex;
-  background: rgba(79, 98, 141, 0.06);
-  padding: 0.25rem;
-  margin: 0.75rem 1.25rem;
-  border-radius: 10px;
-  border: 1px solid rgba(79, 98, 141, 0.1);
-}
-
-.tab-btn {
-  flex: 1;
-  background: none;
-  border: none;
-  color: #4f628d;
-  opacity: 0.75;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.45rem 0.5rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: var(--transition-smooth);
-}
-
-.tab-btn:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.tab-btn.active {
-  background: #ffffff;
-  color: #16171d;
-  opacity: 1;
-  box-shadow: 0 2px 8px rgba(79, 98, 141, 0.12);
-}
-
 /* Preview Display */
 .preview-display {
   flex-grow: 1;
@@ -380,46 +477,28 @@
   padding: 1.5rem;
   position: relative;
   overflow: hidden;
-  min-height: 220px;
-  transition: background-color 0.4s ease;
-}
-
-.font-description-tooltip {
-  position: absolute;
-  bottom: 0.75rem;
-  left: 0.75rem;
-  right: 0.75rem;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(79, 98, 141, 0.18);
-  border-radius: 10px;
-  padding: 0.6rem 0.8rem;
-  font-size: 0.75rem;
-  color: #4f628d;
-  line-height: 1.4;
-  text-align: left;
-  box-shadow: 0 4px 12px rgba(79, 98, 141, 0.08);
+  min-height: 180px;
+  transition: background-color 0.3s ease;
 }
 
 /* Modos de Preview */
 .preview-h1 {
-  font-size: 2.4rem;
+  font-size: 2.3rem;
   font-weight: 700;
   line-height: 1.15;
   text-align: center;
   width: 100%;
   word-wrap: break-word;
-  transition: color 0.3s ease;
   padding: 0 0.5rem;
 }
 
 .preview-h2 {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: 1.25;
   text-align: center;
   width: 100%;
   word-wrap: break-word;
-  transition: color 0.3s ease;
   padding: 0 0.5rem;
 }
 
@@ -428,23 +507,23 @@
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  max-width: 280px;
+  max-width: 250px;
   aspect-ratio: 1;
-  background: #121318; /* Instagram mock oscuro para que resalte la tipografía */
+  background: #121318;
   border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  padding: 1.25rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
   border: 1px solid rgba(255,255,255,0.06);
   text-align: left;
   position: relative;
 }
 
 .preview-insta-quote {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   line-height: 1.35;
   font-weight: 600;
   color: #ffffff;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   word-wrap: break-word;
 }
 
@@ -453,155 +532,45 @@
   align-items: center;
   gap: 0.5rem;
   border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 0.6rem;
-  margin-top: 1rem;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .preview-insta-avatar {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: linear-gradient(135deg, #f78041, #d96a73);
 }
 
 .preview-insta-handle {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: #c1d0e0;
 }
 
 .preview-body {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   line-height: 1.5;
   text-align: left;
   width: 100%;
-  max-height: 180px;
+  max-height: 140px;
   overflow-y: auto;
   padding: 0 0.5rem;
   scrollbar-width: thin;
 }
 
-/* Controles de Color y Filtro */
-.card-controls {
-  padding: 1.25rem 1.5rem;
-  background: rgba(79, 98, 141, 0.04);
-  border-top: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.color-picker-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.control-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
+/* Card Footer con Descripción Fijo */
+.card-description-footer {
+  padding: 1rem 1.5rem;
+  background: rgba(79, 98, 141, 0.03);
+  border-top: 1px solid rgba(79, 98, 141, 0.08);
+  font-size: 0.82rem;
   color: #4f628d;
-  font-weight: 800;
-  letter-spacing: 0.8px;
+  line-height: 1.45;
   text-align: left;
-}
-
-.colors-grid {
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  padding: 0.25rem 0;
-  scrollbar-width: none;
-}
-
-.colors-grid::-webkit-scrollbar {
-  display: none;
-}
-
-.color-swatch {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.color-swatch:hover {
-  transform: scale(1.15);
-}
-
-.color-swatch.active {
-  border-color: #16171d;
-  transform: scale(1.1);
-  box-shadow: 0 0 0 2px rgba(79, 98, 141, 0.25);
-}
-
-.filter-toggle-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.4rem 0;
-}
-
-.filter-toggle-label {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #16171d;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Switch styling */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(79, 98, 141, 0.15);
-  transition: .3s;
-  border-radius: 34px;
-  border: 1px solid rgba(79, 98, 141, 0.1);
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .3s;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-}
-
-input:checked + .slider {
-  background-color: #4f628d;
-}
-
-input:checked + .slider:before {
-  transform: translateX(20px);
+  font-weight: 500;
 }
 
 /* Botones de Acción Tinder (Like / Dislike) */
@@ -624,8 +593,7 @@ input:checked + .slider:before {
   cursor: pointer;
   transition: var(--transition-smooth);
   box-shadow: 0 4px 15px rgba(79, 98, 141, 0.1);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
+  background: #ffffff;
 }
 
 .action-btn svg {
@@ -639,9 +607,9 @@ input:checked + .slider:before {
 }
 
 .action-btn.dislike:hover {
-  background: rgba(217, 106, 115, 0.1);
+  background: rgba(217, 106, 115, 0.08);
   border-color: rgba(217, 106, 115, 0.35);
-  transform: translateY(-2px);
+  transform: scale(1.08) translateY(-2px);
 }
 
 .action-btn.like {
@@ -649,9 +617,9 @@ input:checked + .slider:before {
 }
 
 .action-btn.like:hover {
-  background: rgba(143, 177, 134, 0.1);
+  background: rgba(143, 177, 134, 0.08);
   border-color: rgba(143, 177, 134, 0.35);
-  transform: translateY(-2px);
+  transform: scale(1.08) translateY(-2px);
 }
 
 .action-btn:active {
@@ -660,7 +628,7 @@ input:checked + .slider:before {
 
 .shortcuts-tip {
   font-size: 0.78rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #4f628d;
   opacity: 0.8;
   margin-top: 1rem;
@@ -742,7 +710,6 @@ input:checked + .slider:before {
   border: 1px solid rgba(79, 98, 141, 0.25);
   border-radius: var(--radius-sm);
   color: #16171d;
-  padding: 0.9-rem 1.25rem;
   padding: 0.9rem 2.5rem 0.9rem 1.2rem;
   font-size: 1rem;
   font-weight: 500;
@@ -757,7 +724,7 @@ input:checked + .slider:before {
   box-shadow: 0 0 0 4px rgba(106, 141, 211, 0.15);
 }
 
-/* Icono dropdown personalizado en select */
+/* Icono dropdown en select */
 .select-container:after {
   content: '▼';
   font-size: 0.65rem;
@@ -773,7 +740,7 @@ input:checked + .slider:before {
 .role-live-preview {
   margin-top: 0.5rem;
   padding: 1.5rem;
-  background: #181920; /* Previsualización con fondo oscuro para alto contraste */
+  background: #181920;
   color: #ffffff;
   border-radius: var(--radius-sm);
   border: 1px solid rgba(79, 98, 141, 0.1);
@@ -861,7 +828,7 @@ input:checked + .slider:before {
 
 /* Consenso Visual (Winning Group) */
 .consensus-preview-box {
-  background: #181920; /* Caja de consenso en oscuro para resaltar todas las tipografías de colores */
+  background: #181920;
   color: #ffffff;
   border: 1px solid rgba(79, 98, 141, 0.1);
   border-radius: var(--radius-md);
@@ -1061,7 +1028,7 @@ input:checked + .slider:before {
   font-weight: 700;
 }
 
-/* Vacío / Sin datos */
+/* Vacío */
 .empty-state {
   text-align: center;
   padding: 3rem 1.5rem;
@@ -1075,7 +1042,7 @@ input:checked + .slider:before {
   opacity: 0.6;
 }
 
-/* Dashboard Actions */
+/* Actions */
 .dashboard-actions {
   display: flex;
   gap: 1rem;
@@ -1129,7 +1096,6 @@ input:checked + .slider:before {
   transform: translateY(0);
 }
 
-/* Footer info */
 .app-footer {
   margin-top: 4rem;
   font-size: 0.82rem;
