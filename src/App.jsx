@@ -52,16 +52,42 @@ function App() {
   // Historial global de respuestas
   const [responses, setResponses] = useState([]);
 
-  // Cargar historial de localStorage al iniciar
+  const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:10000' : '';
+
+  // Función de Sincronización con el Servidor
+  const syncWithServer = async (localList) => {
+    const listToSync = localList !== undefined ? localList : responses;
+    try {
+      const res = await fetch(`${API_BASE}/api/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientResponses: listToSync })
+      });
+      if (res.ok) {
+        const mergedList = await res.json();
+        setResponses(mergedList);
+        localStorage.setItem('typematch_responses', JSON.stringify(mergedList));
+        return mergedList;
+      }
+    } catch (e) {
+      console.warn('Error sincronizando con el servidor (usando copia local):', e);
+    }
+    return listToSync;
+  };
+
+  // Cargar historial de localStorage al iniciar y sincronizar
   useEffect(() => {
     const saved = localStorage.getItem('typematch_responses');
+    let localData = [];
     if (saved) {
       try {
-        setResponses(JSON.parse(saved));
+        localData = JSON.parse(saved);
+        setResponses(localData);
       } catch (e) {
-        console.error('Error cargando respuestas:', e);
+        console.error('Error cargando respuestas locales:', e);
       }
     }
+    syncWithServer(localData);
   }, []);
 
   // Keyboard Shortcuts para el Swiper
@@ -96,6 +122,17 @@ function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [screen, currentIndex, activeTab, textColor, likedFonts, dislikedFonts, swipeDirection]);
+
+  // Polling periódico para sincronización en tiempo real en el Dashboard
+  useEffect(() => {
+    if (screen !== 'DASHBOARD') return;
+
+    const interval = setInterval(() => {
+      syncWithServer();
+    }, 4000); // Polling cada 4 segundos
+
+    return () => clearInterval(interval);
+  }, [screen, responses]);
 
   // Manejar el login
   const handleLoginSubmit = (e) => {
@@ -146,7 +183,7 @@ function App() {
   };
 
   // Guardar asignación de roles y ver resultados
-  const handleSaveAssignments = () => {
+  const handleSaveAssignments = async () => {
     const newResponse = {
       username: username.trim(),
       timestamp: new Date().toLocaleString('es-ES', {
@@ -167,6 +204,9 @@ function App() {
     const updated = [...responses, newResponse];
     setResponses(updated);
     localStorage.setItem('typematch_responses', JSON.stringify(updated));
+    
+    // Sincronizar inmediatamente al servidor
+    await syncWithServer(updated);
     setScreen('DASHBOARD');
   };
 
@@ -177,19 +217,42 @@ function App() {
   };
 
   // Borrar todo el historial de votaciones
-  const handleClearHistory = () => {
+  const handleClearHistory = async () => {
     if (window.confirm('¿Estás seguro de que deseas borrar todo el historial de votos? Esta acción no se puede deshacer.')) {
       setResponses([]);
       localStorage.removeItem('typematch_responses');
+      try {
+        await fetch(`${API_BASE}/api/clear`, { method: 'POST' });
+      } catch (e) {
+        console.error('Error al borrar en el servidor:', e);
+      }
     }
   };
 
   // Borrar un usuario individual del historial
-  const handleDeleteResponse = (indexToDelete) => {
-    if (window.confirm('¿Borrar los votos de este colaborador?')) {
+  const handleDeleteResponse = async (indexToDelete) => {
+    const userToDelete = responses[indexToDelete];
+    if (!userToDelete) return;
+
+    if (window.confirm(`¿Borrar los votos de ${userToDelete.username}?`)) {
       const updated = responses.filter((_, idx) => idx !== indexToDelete);
       setResponses(updated);
       localStorage.setItem('typematch_responses', JSON.stringify(updated));
+      
+      try {
+        const res = await fetch(`${API_BASE}/api/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: userToDelete.username })
+        });
+        if (res.ok) {
+          const freshList = await res.json();
+          setResponses(freshList);
+          localStorage.setItem('typematch_responses', JSON.stringify(freshList));
+        }
+      } catch (e) {
+        console.error('Error al borrar en el servidor:', e);
+      }
     }
   };
 
