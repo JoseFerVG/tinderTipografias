@@ -1359,6 +1359,230 @@
   border-radius: 3px;
 }
 
+/* ================= TOURNAMENT VS SCREEN ================= */
+.tournament-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem 0;
+  width: 100%;
+}
+
+.tournament-stepper {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2.25rem;
+  width: 100%;
+  max-width: 600px;
+  flex-wrap: wrap;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #4f628d;
+  opacity: 0.45;
+  transition: all 0.3s ease;
+}
+
+.step-item.active {
+  opacity: 1;
+  color: #16171d;
+}
+
+.step-item.completed {
+  opacity: 0.85;
+  color: #8fb186;
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(79, 98, 141, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.step-item.active .step-num {
+  background: #4f628d;
+  color: #ffffff;
+}
+
+.step-item.completed .step-num {
+  background: #8fb186;
+  color: #ffffff;
+}
+
+.tournament-info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.tournament-role-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #16171d;
+  margin: 0;
+}
+
+.tournament-round-indicator {
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: rgba(79, 98, 141, 0.08);
+  color: #4f628d;
+  padding: 0.3rem 0.85rem;
+  border-radius: 50px;
+}
+
+.versus-container {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  align-items: stretch;
+  position: relative;
+}
+
+.versus-card {
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(79, 98, 141, 0.12);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 380px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+}
+
+.versus-card:hover {
+  background: #ffffff;
+  border-color: #4f628d;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(79, 98, 141, 0.1);
+}
+
+.versus-preview-box-container {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(79, 98, 141, 0.06);
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  position: relative;
+  min-height: 180px;
+  width: 100%;
+}
+
+.versus-option-tag {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #4f628d;
+  opacity: 0.55;
+  letter-spacing: 0.5px;
+}
+
+.versus-font-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: center;
+  margin-top: auto;
+}
+
+.versus-font-details .font-name {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #16171d;
+  margin: 0;
+}
+
+.versus-font-details .font-category {
+  font-size: 0.75rem;
+  color: #4f628d;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.shortcut-hint {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #4f628d;
+  opacity: 0.35;
+  margin-top: 0.75rem;
+  text-align: center;
+  transition: opacity 0.2s;
+}
+
+.versus-card:hover .shortcut-hint {
+  opacity: 0.75;
+}
+
+.versus-divider {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #16171d;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  border: 3px solid #f9fcfd;
+  align-self: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+}
+
+@media (max-width: 768px) {
+  .versus-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .versus-card {
+    min-height: 320px;
+    padding: 1.5rem;
+  }
+
+  .versus-preview-box-container {
+    min-height: 150px;
+    padding: 1.5rem 1rem;
+  }
+
+  .versus-divider {
+    margin: -0.75rem auto;
+  }
+}
+
 /* ================= RESPONSIVE DESIGN ================= */
 
 /* Tablets y pantallas medianas */

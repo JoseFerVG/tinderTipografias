@@ -43,11 +43,12 @@ function App() {
   // Controles visuales estáticos (Text color)
   const [textColor, setTextColor] = useState(COLORS[4]); // Slate blue por defecto
 
-  // Estados de asignación de roles
-  const [assignedH1, setAssignedH1] = useState('');
-  const [assignedH2, setAssignedH2] = useState('');
-  const [assignedInstagram, setAssignedInstagram] = useState('');
-  const [assignedBody, setAssignedBody] = useState('');
+  // Estados para el torneo de cara a cara (Bracket)
+  const [tournamentRole, setTournamentRole] = useState('h1'); // 'h1', 'h2', 'instagram', 'body'
+  const [tournamentCandidates, setTournamentCandidates] = useState([]);
+  const [tournamentRound, setTournamentRound] = useState(1);
+  const [tournamentTotalRounds, setTournamentTotalRounds] = useState(1);
+  const [tournamentResults, setTournamentResults] = useState({ h1: '', h2: '', instagram: '', body: '' });
 
   // Historial global de respuestas
   const [responses, setResponses] = useState([]);
@@ -134,6 +135,22 @@ function App() {
     return () => clearInterval(interval);
   }, [screen, responses]);
 
+  // Shortcuts para el Torneo
+  useEffect(() => {
+    if (screen !== 'TOURNAMENT' || tournamentCandidates.length < 2) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === '1' || e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        handleSelectTournamentWinner(tournamentCandidates[0]);
+      } else if (e.key === '2' || e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        handleSelectTournamentWinner(tournamentCandidates[1]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [screen, tournamentCandidates, tournamentRole, tournamentResults]);
+
   // Manejar el login
   const handleLoginSubmit = (e) => {
     e.preventDefault();
@@ -168,22 +185,92 @@ function App() {
       if (currentIndex < FONTS_DATA.length - 1) {
         setCurrentIndex(prev => prev + 1);
       } else {
-        // Fin de la lista de fuentes -> Pasar a asignación de roles
-        const liked = [...likedFonts, isLike ? currentFont.id : null].filter(Boolean);
-        const fallbackFont = liked.length > 0 ? liked[0] : FONTS_DATA[0].id;
+        // Fin de la lista de fuentes -> Iniciar Torneo de cara a cara (Bracket)
+        const finalLiked = [...likedFonts, isLike ? currentFont.id : null].filter(Boolean);
+        setLikedFonts(finalLiked);
         
-        setAssignedH1(fallbackFont);
-        setAssignedH2(liked.length > 1 ? liked[1] : fallbackFont);
-        setAssignedInstagram(liked.length > 2 ? liked[2] : fallbackFont);
-        setAssignedBody(liked.length > 3 ? liked[3] : fallbackFont);
+        const candidatesSource = finalLiked.length > 0 ? finalLiked : ['playfair-display', 'plus-jakarta-sans', 'syne', 'inter', 'montserrat'];
+        setTournamentRole('h1');
+        setTournamentResults({ h1: '', h2: '', instagram: '', body: '' });
         
-        setScreen('ASSIGN');
+        initializeRoleTournament('h1', candidatesSource, { h1: '', h2: '', instagram: '', body: '' }, finalLiked);
       }
     }, 380); // Duración de la animación en milisegundos
   };
 
-  // Guardar asignación de roles y ver resultados
-  const handleSaveAssignments = async () => {
+  // Helper para buscar el siguiente rol en el torneo
+  const getNextRole = (current) => {
+    if (current === 'h1') return 'h2';
+    if (current === 'h2') return 'instagram';
+    if (current === 'instagram') return 'body';
+    return null;
+  };
+
+  // Helper para mostrar nombres amigables de roles
+  const getRoleNameInSpanish = (role) => {
+    if (role === 'h1') return 'Título Principal (H1)';
+    if (role === 'h2') return 'Subtítulo (H2)';
+    if (role === 'instagram') return 'Instagram Post';
+    return 'Cuerpo de Texto';
+  };
+
+  // Inicializar la ronda de comparaciones para un rol específico
+  const initializeRoleTournament = (role, sourceList, currentResults, finalLikes) => {
+    const likesToUse = finalLikes || likedFonts;
+    
+    if (sourceList.length === 1) {
+      // Si solo hay una fuente candidata, gana por defecto para este rol y avanzamos al siguiente
+      const nextResults = { ...currentResults, [role]: sourceList[0] };
+      setTournamentResults(nextResults);
+      
+      const nextRole = getNextRole(role);
+      if (nextRole) {
+        const nextSource = likesToUse.length > 0 ? likesToUse : ['playfair-display', 'plus-jakarta-sans', 'syne', 'inter', 'montserrat'];
+        initializeRoleTournament(nextRole, nextSource, nextResults, likesToUse);
+      } else {
+        // Finalizar y guardar todo
+        finalizeTournamentDirect(nextResults, likesToUse);
+      }
+    } else {
+      setTournamentRole(role);
+      setTournamentCandidates(sourceList);
+      setTournamentRound(1);
+      setTournamentTotalRounds(sourceList.length - 1);
+      setScreen('TOURNAMENT');
+    }
+  };
+
+  // Seleccionar la fuente ganadora en la comparativa versus
+  const handleSelectTournamentWinner = (winnerId) => {
+    const pair = [tournamentCandidates[0], tournamentCandidates[1]];
+    const loserId = pair[0] === winnerId ? pair[1] : pair[0];
+    
+    // Eliminamos la fuente perdedora de los candidatos del rol actual
+    const nextCandidates = tournamentCandidates.filter(id => id !== loserId);
+    
+    if (nextCandidates.length === 1) {
+      // Tenemos una ganadora para este rol
+      const finalWinner = nextCandidates[0];
+      const updatedResults = { ...tournamentResults, [tournamentRole]: finalWinner };
+      setTournamentResults(updatedResults);
+      
+      const nextRole = getNextRole(tournamentRole);
+      if (nextRole) {
+        const nextSource = likedFonts.length > 0 ? likedFonts : ['playfair-display', 'plus-jakarta-sans', 'syne', 'inter', 'montserrat'];
+        initializeRoleTournament(nextRole, nextSource, updatedResults);
+      } else {
+        // Fin de todo el torneo, guardamos la selección
+        finalizeTournamentDirect(updatedResults, likedFonts);
+      }
+    } else {
+      // Avanzar al siguiente cara a cara del mismo rol
+      setTournamentCandidates(nextCandidates);
+      setTournamentRound(prev => prev + 1);
+    }
+  };
+
+  // Finalizar torneo y persistir en backend / localStorage
+  const finalizeTournamentDirect = async (finalResults, finalLikes) => {
     const newResponse = {
       username: username.trim(),
       timestamp: new Date().toLocaleString('es-ES', {
@@ -194,12 +281,12 @@ function App() {
         minute: '2-digit'
       }),
       selections: {
-        h1: assignedH1,
-        h2: assignedH2,
-        instagram: assignedInstagram,
-        body: assignedBody
+        h1: finalResults.h1,
+        h2: finalResults.h2,
+        instagram: finalResults.instagram,
+        body: finalResults.body
       },
-      likes: likedFonts,
+      likes: finalLikes || likedFonts,
       dislikes: dislikedFonts
     };
 
@@ -207,7 +294,6 @@ function App() {
     setResponses(updated);
     localStorage.setItem('typematch_responses', JSON.stringify(updated));
     
-    // Sincronizar inmediatamente al servidor
     await syncWithServer(updated);
     setScreen('DASHBOARD');
   };
@@ -629,155 +715,142 @@ function App() {
           </main>
         )}
 
-        {/* ---------------- ASSIGNMENT SCREEN ---------------- */}
-        {screen === 'ASSIGN' && (
-          <main className="assignment-screen animate-fade-in">
-            <h2>Asignación de Roles Tipográficos</h2>
-            <p>Has calificado todas las tipografías. Ahora, asigna cuál de tus preferidas prefieres para cada canal corporativo:</p>
-            
-            <div className="assignment-list">
-              {/* Asignación H1 */}
-              <div className="assignment-item">
-                <div className="assignment-meta">
-                  <div>
-                    <h3 className="assignment-role">H1 — Título Principal</h3>
-                    <p className="assignment-role-desc">Cabeceras principales de la web y portadas destacadas.</p>
-                  </div>
-                </div>
-                <div className="select-container">
-                  <select 
-                    className="assignment-select"
-                    value={assignedH1}
-                    onChange={(e) => setAssignedH1(e.target.value)}
-                  >
-                    {FONTS_DATA.map(f => {
-                      const isLiked = likedFonts.includes(f.id);
-                      return (
-                        <option key={f.id} value={f.id}>
-                          {isLiked ? '❤️ ' : ''}{f.name} ({f.category})
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                <div 
-                  className="role-live-preview" 
-                  style={{ fontFamily: getFontObj(assignedH1).family }}
-                >
-                  {ROLE_SAMPLES.h1}
-                  <span className="consensus-font-indicator">Muestra en fuente {getFontName(assignedH1)}</span>
-                </div>
-              </div>
+        {/* ---------------- TOURNAMENT SCREEN ---------------- */}
+        {screen === 'TOURNAMENT' && tournamentCandidates.length >= 2 && (
+          <main className="tournament-screen animate-fade-in">
+            <h2>Elegir Tipografías: Cara a Cara</h2>
+            <p>Compara tus tipografías favoritas y selecciona tu preferida para decidir los canales de marca corporativos.</p>
 
-              {/* Asignación H2 */}
-              <div className="assignment-item">
-                <div className="assignment-meta">
-                  <div>
-                    <h3 className="assignment-role">H2 — Subtítulo / Secciones</h3>
-                    <p className="assignment-role-desc">Títulos intermedios, subtítulos y cabeceras de segundo nivel.</p>
-                  </div>
-                </div>
-                <div className="select-container">
-                  <select 
-                    className="assignment-select"
-                    value={assignedH2}
-                    onChange={(e) => setAssignedH2(e.target.value)}
-                  >
-                    {FONTS_DATA.map(f => {
-                      const isLiked = likedFonts.includes(f.id);
-                      return (
-                        <option key={f.id} value={f.id}>
-                          {isLiked ? '❤️ ' : ''}{f.name} ({f.category})
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                <div 
-                  className="role-live-preview" 
-                  style={{ fontFamily: getFontObj(assignedH2).family }}
-                >
-                  {ROLE_SAMPLES.h2}
-                  <span className="consensus-font-indicator">Muestra en fuente {getFontName(assignedH2)}</span>
-                </div>
+            {/* Stepper para roles */}
+            <div className="tournament-stepper">
+              <div className={`step-item ${tournamentRole === 'h1' ? 'active' : ''} ${tournamentResults.h1 ? 'completed' : ''}`}>
+                <span className="step-num">1</span>
+                <span className="step-name">H1 (Título)</span>
               </div>
-
-              {/* Asignación Instagram */}
-              <div className="assignment-item">
-                <div className="assignment-meta">
-                  <div>
-                    <h3 className="assignment-role">Redes Sociales / Instagram</h3>
-                    <p className="assignment-role-desc">Gráficas, citas e historias en redes visuales.</p>
-                  </div>
-                </div>
-                <div className="select-container">
-                  <select 
-                    className="assignment-select"
-                    value={assignedInstagram}
-                    onChange={(e) => setAssignedInstagram(e.target.value)}
-                  >
-                    {FONTS_DATA.map(f => {
-                      const isLiked = likedFonts.includes(f.id);
-                      return (
-                        <option key={f.id} value={f.id}>
-                          {isLiked ? '❤️ ' : ''}{f.name} ({f.category})
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                <div 
-                  className="role-live-preview role-live-preview-insta" 
-                  style={{ fontFamily: getFontObj(assignedInstagram).family }}
-                >
-                  {ROLE_SAMPLES.instagram}
-                  <span className="consensus-font-indicator">Muestra en fuente {getFontName(assignedInstagram)}</span>
-                </div>
+              <div className={`step-item ${tournamentRole === 'h2' ? 'active' : ''} ${tournamentResults.h2 ? 'completed' : ''}`}>
+                <span className="step-num">2</span>
+                <span className="step-name">H2 (Subtítulo)</span>
               </div>
-
-              {/* Asignación Cuerpo de Texto */}
-              <div className="assignment-item">
-                <div className="assignment-meta">
-                  <div>
-                    <h3 className="assignment-role">Cuerpo de Texto (Párrafos)</h3>
-                    <p className="assignment-role-desc">Lectura general de artículos, descripciones y textos extensos.</p>
-                  </div>
-                </div>
-                <div className="select-container">
-                  <select 
-                    className="assignment-select"
-                    value={assignedBody}
-                    onChange={(e) => setAssignedBody(e.target.value)}
-                  >
-                    {FONTS_DATA.map(f => {
-                      const isLiked = likedFonts.includes(f.id);
-                      return (
-                        <option key={f.id} value={f.id}>
-                          {isLiked ? '❤️ ' : ''}{f.name} ({f.category})
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-                <div 
-                  className="role-live-preview role-live-preview-body" 
-                  style={{ fontFamily: getFontObj(assignedBody).family }}
-                >
-                  {ROLE_SAMPLES.body}
-                  <span className="consensus-font-indicator">Muestra en fuente {getFontName(assignedBody)}</span>
-                </div>
+              <div className={`step-item ${tournamentRole === 'instagram' ? 'active' : ''} ${tournamentResults.instagram ? 'completed' : ''}`}>
+                <span className="step-num">3</span>
+                <span className="step-name">Instagram</span>
+              </div>
+              <div className={`step-item ${tournamentRole === 'body' ? 'active' : ''} ${tournamentResults.body ? 'completed' : ''}`}>
+                <span className="step-num">4</span>
+                <span className="step-name">Cuerpo</span>
               </div>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-              <button className="btn-primary" onClick={handleSaveAssignments}>
-                Guardar Selección y Ver Resultados
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" strokeLinecap="round" strokeLinejoin="round"/>
-                  <polyline points="17 21 17 13 7 13 7 21" strokeLinecap="round" strokeLinejoin="round"/>
-                  <polyline points="7 3 7 8 15 8" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
+            {/* Indicador de comparación */}
+            <div className="tournament-info-bar">
+              <h3 className="tournament-role-title">Decidiendo: {getRoleNameInSpanish(tournamentRole)}</h3>
+              <span className="tournament-round-indicator">Eliminatoria {tournamentRound} de {tournamentTotalRounds}</span>
+            </div>
+
+            {/* Panel de cara a cara (Versus) */}
+            <div className="versus-container">
+              {/* Opción Izquierda */}
+              {(() => {
+                const fontLeft = getFontObj(tournamentCandidates[0]);
+                return (
+                  <div 
+                    className="versus-card option-left"
+                    onClick={() => handleSelectTournamentWinner(fontLeft.id)}
+                  >
+                    <div className="versus-preview-box-container">
+                      <span className="versus-option-tag">Opción A</span>
+                      {tournamentRole === 'h1' && (
+                        <h1 style={{ fontFamily: fontLeft.family, fontSize: '2rem', margin: 0, color: '#16171d', wordBreak: 'break-word', textTransform: 'uppercase' }}>
+                          {ROLE_SAMPLES.h1}
+                        </h1>
+                      )}
+                      {tournamentRole === 'h2' && (
+                        <h2 style={{ fontFamily: fontLeft.family, fontSize: '1.3rem', margin: 0, color: '#4f628d', wordBreak: 'break-word' }}>
+                          {ROLE_SAMPLES.h2}
+                        </h2>
+                      )}
+                      {tournamentRole === 'instagram' && (
+                        <div className="preview-insta" style={{ width: '100%', pointerEvents: 'none' }}>
+                          <p className="preview-insta-quote" style={{ fontFamily: fontLeft.family, fontSize: '0.95rem', margin: '0 0 0.75rem 0' }}>
+                            {ROLE_SAMPLES.instagram}
+                          </p>
+                          <div className="preview-insta-footer">
+                            <div className="preview-insta-avatar"></div>
+                            <div>
+                              <div className="preview-insta-handle">@marca.empresa</div>
+                              <div style={{ fontSize: '0.55rem', color: '#c1d0e0', opacity: 0.5 }}>Fuente: {fontLeft.name}</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {tournamentRole === 'body' && (
+                        <p style={{ fontFamily: fontLeft.family, fontSize: '0.85rem', margin: 0, color: '#2e303a', lineHeight: 1.5, textAlign: 'left' }}>
+                          {ROLE_SAMPLES.body}
+                        </p>
+                      )}
+                    </div>
+                    <div className="versus-font-details">
+                      <h4 className="font-name">{fontLeft.name}</h4>
+                      <span className="font-category">{fontLeft.category} — {fontLeft.type}</span>
+                    </div>
+                    <span className="shortcut-hint">Pulsar [1] o ←</span>
+                  </div>
+                );
+              })()}
+
+              {/* Divisor VS */}
+              <div className="versus-divider">
+                <span>VS</span>
+              </div>
+
+              {/* Opción Derecha */}
+              {(() => {
+                const fontRight = getFontObj(tournamentCandidates[1]);
+                return (
+                  <div 
+                    className="versus-card option-right"
+                    onClick={() => handleSelectTournamentWinner(fontRight.id)}
+                  >
+                    <div className="versus-preview-box-container">
+                      <span className="versus-option-tag">Opción B</span>
+                      {tournamentRole === 'h1' && (
+                        <h1 style={{ fontFamily: fontRight.family, fontSize: '2rem', margin: 0, color: '#16171d', wordBreak: 'break-word', textTransform: 'uppercase' }}>
+                          {ROLE_SAMPLES.h1}
+                        </h1>
+                      )}
+                      {tournamentRole === 'h2' && (
+                        <h2 style={{ fontFamily: fontRight.family, fontSize: '1.3rem', margin: 0, color: '#4f628d', wordBreak: 'break-word' }}>
+                          {ROLE_SAMPLES.h2}
+                        </h2>
+                      )}
+                      {tournamentRole === 'instagram' && (
+                        <div className="preview-insta" style={{ width: '100%', pointerEvents: 'none' }}>
+                          <p className="preview-insta-quote" style={{ fontFamily: fontRight.family, fontSize: '0.95rem', margin: '0 0 0.75rem 0' }}>
+                            {ROLE_SAMPLES.instagram}
+                          </p>
+                          <div className="preview-insta-footer">
+                            <div className="preview-insta-avatar"></div>
+                            <div>
+                              <div className="preview-insta-handle">@marca.empresa</div>
+                              <div style={{ fontSize: '0.55rem', color: '#c1d0e0', opacity: 0.5 }}>Fuente: {fontRight.name}</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {tournamentRole === 'body' && (
+                        <p style={{ fontFamily: fontRight.family, fontSize: '0.85rem', margin: 0, color: '#2e303a', lineHeight: 1.5, textAlign: 'left' }}>
+                          {ROLE_SAMPLES.body}
+                        </p>
+                      )}
+                    </div>
+                    <div className="versus-font-details">
+                      <h4 className="font-name">{fontRight.name}</h4>
+                      <span className="font-category">{fontRight.category} — {fontRight.type}</span>
+                    </div>
+                    <span className="shortcut-hint">Pulsar [2] o →</span>
+                  </div>
+                );
+              })()}
             </div>
           </main>
         )}
