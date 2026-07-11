@@ -54,6 +54,7 @@ function App() {
 
   // Historial global de respuestas
   const [responses, setResponses] = useState([]);
+  const [selectedCollaborator, setSelectedCollaborator] = useState(null);
 
   const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:10000' : '';
 
@@ -376,28 +377,31 @@ function App() {
       .sort((a, b) => b.count - a.count);
   };
 
-  // Calcular las fuentes ganadoras por consenso general
-  const getConsensusWinners = () => {
+  // Calcular las fuentes ganadoras por consenso general (admitiendo empates)
+  const getConsensusWinnersWithTies = () => {
     const roles = ['h1', 'h2', 'instagram', 'body'];
     const winners = {};
     
     roles.forEach(role => {
       const tally = getTally(role);
       if (tally.length > 0) {
-        winners[role] = tally[0].fontId;
+        const maxCount = tally[0].count;
+        // Quedarse con todas las fuentes que tengan el mismo número máximo de votos
+        const tiedWinners = tally.filter(item => item.count === maxCount).map(item => item.fontId);
+        winners[role] = tiedWinners;
       } else {
         // Fallback por defecto según estilo corporativo
-        if (role === 'h1') winners[role] = 'playfair-display';
-        else if (role === 'h2') winners[role] = 'plus-jakarta-sans';
-        else if (role === 'instagram') winners[role] = 'syne';
-        else winners[role] = 'inter';
+        if (role === 'h1') winners[role] = ['playfair-display'];
+        else if (role === 'h2') winners[role] = ['plus-jakarta-sans'];
+        else if (role === 'instagram') winners[role] = ['syne'];
+        else winners[role] = ['inter'];
       }
     });
 
     return winners;
   };
 
-    const winners = getConsensusWinners();
+  const winners = getConsensusWinnersWithTies();
 
     // Calcular las estadísticas de "Likes" (Deslizados a la derecha) y "Nopes" (Deslizados a la izquierda)
     const getSwipeStats = () => {
@@ -989,22 +993,94 @@ function App() {
                             
                             {/* Hero Section */}
                             <div className="mockup-hero">
-                              <span className="font-spec-badge h1-badge">H1 — {getFontName(winners.h1)} ({getFontObj(winners.h1).type})</span>
-                              <h1 className="consensus-h1" style={{ fontFamily: getFontObj(winners.h1).family, color: '#16171d', margin: '0 0 1rem 0' }}>
-                                {ROLE_SAMPLES.h1}
-                              </h1>
+                              {/* H1 */}
+                              {(() => {
+                                const w = winners.h1;
+                                if (w.length > 1) {
+                                  return (
+                                    <>
+                                      <span className="font-spec-badge h1-badge">H1 (Empate) — {getFontName(w[0])} VS {getFontName(w[1])}</span>
+                                      <div className="consensus-tie-row">
+                                        <h1 className="consensus-h1" style={{ fontFamily: getFontObj(w[0]).family, color: '#16171d', margin: 0 }}>
+                                          {ROLE_SAMPLES.h1}
+                                        </h1>
+                                        <span className="tie-vs-badge">VS</span>
+                                        <h1 className="consensus-h1" style={{ fontFamily: getFontObj(w[1]).family, color: '#16171d', margin: 0 }}>
+                                          {ROLE_SAMPLES.h1}
+                                        </h1>
+                                      </div>
+                                    </>
+                                  );
+                                }
+                                return (
+                                  <>
+                                    <span className="font-spec-badge h1-badge">H1 — {getFontName(w[0])} ({getFontObj(w[0]).type})</span>
+                                    <h1 className="consensus-h1" style={{ fontFamily: getFontObj(w[0]).family, color: '#16171d', margin: '0 0 1rem 0' }}>
+                                      {ROLE_SAMPLES.h1}
+                                    </h1>
+                                  </>
+                                );
+                              })()}
 
-                              <span className="font-spec-badge h2-badge" style={{ marginTop: '0.5rem' }}>H2 — {getFontName(winners.h2)} ({getFontObj(winners.h2).type})</span>
-                              <h2 className="consensus-h2" style={{ fontFamily: getFontObj(winners.h2).family, color: '#4f628d', margin: '0 0 1rem 0' }}>
-                                {ROLE_SAMPLES.h2}
-                              </h2>
+                              {/* H2 */}
+                              {(() => {
+                                const w = winners.h2;
+                                if (w.length > 1) {
+                                  return (
+                                    <>
+                                      <span className="font-spec-badge h2-badge" style={{ marginTop: '0.5rem' }}>H2 (Empate) — {getFontName(w[0])} VS {getFontName(w[1])}</span>
+                                      <div className="consensus-tie-row">
+                                        <h2 className="consensus-h2" style={{ fontFamily: getFontObj(w[0]).family, color: '#4f628d', margin: 0 }}>
+                                          {ROLE_SAMPLES.h2}
+                                        </h2>
+                                        <span className="tie-vs-badge">VS</span>
+                                        <h2 className="consensus-h2" style={{ fontFamily: getFontObj(w[1]).family, color: '#4f628d', margin: 0 }}>
+                                          {ROLE_SAMPLES.h2}
+                                        </h2>
+                                      </div>
+                                    </>
+                                  );
+                                }
+                                return (
+                                  <>
+                                    <span className="font-spec-badge h2-badge" style={{ marginTop: '0.5rem' }}>H2 — {getFontName(w[0])} ({getFontObj(w[0]).type})</span>
+                                    <h2 className="consensus-h2" style={{ fontFamily: getFontObj(w[0]).family, color: '#4f628d', margin: '0 0 1rem 0' }}>
+                                      {ROLE_SAMPLES.h2}
+                                    </h2>
+                                  </>
+                                );
+                              })()}
 
-                              <span className="font-spec-badge body-badge" style={{ marginTop: '0.5rem' }}>Texto — {getFontName(winners.body)} ({getFontObj(winners.body).type})</span>
-                              <p className="consensus-body" style={{ fontFamily: getFontObj(winners.body).family, color: '#2e303a', margin: '0 0 1.25rem 0' }}>
-                                {ROLE_SAMPLES.body}
-                              </p>
+                              {/* Cuerpo */}
+                              {(() => {
+                                const w = winners.body;
+                                if (w.length > 1) {
+                                  return (
+                                    <>
+                                      <span className="font-spec-badge body-badge" style={{ marginTop: '0.5rem' }}>Texto (Empate) — {getFontName(w[0])} VS {getFontName(w[1])}</span>
+                                      <div className="consensus-tie-row">
+                                        <p className="consensus-body" style={{ fontFamily: getFontObj(w[0]).family, color: '#2e303a', margin: 0 }}>
+                                          {ROLE_SAMPLES.body}
+                                        </p>
+                                        <span className="tie-vs-badge">VS</span>
+                                        <p className="consensus-body" style={{ fontFamily: getFontObj(w[1]).family, color: '#2e303a', margin: 0 }}>
+                                          {ROLE_SAMPLES.body}
+                                        </p>
+                                      </div>
+                                    </>
+                                  );
+                                }
+                                return (
+                                  <>
+                                    <span className="font-spec-badge body-badge" style={{ marginTop: '0.5rem' }}>Texto — {getFontName(w[0])} ({getFontObj(w[0]).type})</span>
+                                    <p className="consensus-body" style={{ fontFamily: getFontObj(w[0]).family, color: '#2e303a', margin: '0 0 1.25rem 0' }}>
+                                      {ROLE_SAMPLES.body}
+                                    </p>
+                                  </>
+                                );
+                              })()}
 
-                              <button className="mockup-cta" style={{ fontFamily: getFontObj(winners.h2).family }}>
+                              <button className="mockup-cta" style={{ fontFamily: getFontObj(winners.h2[0]).family }}>
                                 Comenzar Proyecto
                               </button>
                             </div>
@@ -1015,37 +1091,109 @@ function App() {
                         <div className="mockup-insta-section">
                           <h4 className="mockup-section-title">Post de Redes Sociales (Instagram)</h4>
                           <div className="mockup-insta-card-container">
-                            <div className="instagram-post-container" style={{ margin: '0 auto', width: '100%', maxWidth: '280px' }}>
-                              <div className="insta-post-header">
-                                <div className="insta-avatar-story-ring">
-                                  <div className="insta-avatar-image"></div>
+                            {(() => {
+                              const w = winners.instagram;
+                              if (w.length > 1) {
+                                return (
+                                  <div className="insta-tie-container">
+                                    <div className="instagram-post-container" style={{ margin: '0 auto', width: '100%', maxWidth: '270px' }}>
+                                      <div className="insta-post-header">
+                                        <div className="insta-avatar-story-ring">
+                                          <div className="insta-avatar-image"></div>
+                                        </div>
+                                        <div className="insta-header-info">
+                                          <span className="insta-username">marca.empresa</span>
+                                          <span className="insta-location">Opción A</span>
+                                        </div>
+                                        <div className="insta-options-dot">•••</div>
+                                      </div>
+                                      <div className="insta-image-area">
+                                        <span className="insta-graphic-quote-mark">“</span>
+                                        <p className="insta-graphic-text" style={{ fontFamily: getFontObj(w[0]).family, fontSize: '0.95rem' }}>
+                                          {ROLE_SAMPLES.instagram}
+                                        </p>
+                                        <div className="insta-graphic-badge">
+                                          <span>{getFontName(w[0])}</span>
+                                        </div>
+                                      </div>
+                                      <div className="insta-action-bar">
+                                        <div className="insta-left-actions">
+                                          <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                          </svg>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="versus-divider" style={{ margin: '1rem auto' }}>
+                                      <span>VS</span>
+                                    </div>
+
+                                    <div className="instagram-post-container" style={{ margin: '0 auto', width: '100%', maxWidth: '270px' }}>
+                                      <div className="insta-post-header">
+                                        <div className="insta-avatar-story-ring">
+                                          <div className="insta-avatar-image"></div>
+                                        </div>
+                                        <div className="insta-header-info">
+                                          <span className="insta-username">marca.empresa</span>
+                                          <span className="insta-location">Opción B</span>
+                                        </div>
+                                        <div className="insta-options-dot">•••</div>
+                                      </div>
+                                      <div className="insta-image-area">
+                                        <span className="insta-graphic-quote-mark">“</span>
+                                        <p className="insta-graphic-text" style={{ fontFamily: getFontObj(w[1]).family, fontSize: '0.95rem' }}>
+                                          {ROLE_SAMPLES.instagram}
+                                        </p>
+                                        <div className="insta-graphic-badge">
+                                          <span>{getFontName(w[1])}</span>
+                                        </div>
+                                      </div>
+                                      <div className="insta-action-bar">
+                                        <div className="insta-left-actions">
+                                          <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                          </svg>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              return (
+                                <div className="instagram-post-container" style={{ margin: '0 auto', width: '100%', maxWidth: '280px' }}>
+                                  <div className="insta-post-header">
+                                    <div className="insta-avatar-story-ring">
+                                      <div className="insta-avatar-image"></div>
+                                    </div>
+                                    <div className="insta-header-info">
+                                      <span className="insta-username">marca.empresa</span>
+                                      <span className="insta-location">Estudio de Diseño</span>
+                                    </div>
+                                    <div className="insta-options-dot">•••</div>
+                                  </div>
+                                  <div className="insta-image-area">
+                                    <span className="insta-graphic-quote-mark">“</span>
+                                    <p className="insta-graphic-text" style={{ fontFamily: getFontObj(w[0]).family, fontSize: '1rem' }}>
+                                      {ROLE_SAMPLES.instagram}
+                                    </p>
+                                    <div className="insta-graphic-badge">
+                                      <span>{getFontName(w[0])}</span>
+                                    </div>
+                                  </div>
+                                  <div className="insta-action-bar">
+                                    <div className="insta-left-actions">
+                                      <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                      </svg>
+                                      <svg className="insta-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                                      </svg>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="insta-header-info">
-                                  <span className="insta-username">marca.empresa</span>
-                                  <span className="insta-location">Estudio de Diseño</span>
-                                </div>
-                                <div className="insta-options-dot">•••</div>
-                              </div>
-                              <div className="insta-image-area">
-                                <span className="insta-graphic-quote-mark">“</span>
-                                <p className="insta-graphic-text" style={{ fontFamily: getFontObj(winners.instagram).family, fontSize: '1rem' }}>
-                                  {ROLE_SAMPLES.instagram}
-                                </p>
-                                <div className="insta-graphic-badge">
-                                  <span>{getFontName(winners.instagram)}</span>
-                                </div>
-                              </div>
-                              <div className="insta-action-bar">
-                                <div className="insta-left-actions">
-                                  <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                                  </svg>
-                                  <svg className="insta-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                                  </svg>
-                                </div>
-                              </div>
-                            </div>
+                              );
+                            })()}
                           </div>
                         </div>
                       </div>
@@ -1189,13 +1337,18 @@ function App() {
                       
                       <div className="history-list">
                         {responses.map((resp, index) => (
-                          <div key={index} className="history-item">
+                          <div 
+                            key={index} 
+                            className="history-item clickable"
+                            onClick={() => setSelectedCollaborator(resp)}
+                            style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                          >
                             <div className="history-user-info">
                               <span className="history-username">{resp.username}</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <span className="history-timestamp">{resp.timestamp}</span>
                                 <button 
-                                  onClick={() => handleDeleteResponse(index)}
+                                  onClick={(e) => { e.stopPropagation(); handleDeleteResponse(index); }}
                                   style={{ background: 'none', border: 'none', color: '#d96a73', cursor: 'pointer', fontSize: '0.85rem' }}
                                   title="Eliminar registro"
                                 >
@@ -1243,6 +1396,100 @@ function App() {
               </>
             )}
           </main>
+        )}
+        {/* Modal de Previsualización de Colaborador */}
+        {selectedCollaborator && (
+          <div className="modal-overlay animate-fade-in" onClick={() => setSelectedCollaborator(null)}>
+            <div className="modal-content glass-card animate-scale-in" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>Diseño Elegido por {selectedCollaborator.username}</h3>
+                <button className="modal-close-btn" onClick={() => setSelectedCollaborator(null)}>✕</button>
+              </div>
+              <p className="modal-subtitle">Previsualización del diseño web y redes sociales configurados por este colaborador:</p>
+              
+              <div className="modal-body-scroll">
+                {/* 1. Simulador de Navegador (Página Web) */}
+                <div className="mockup-browser">
+                  <div className="mockup-browser-header">
+                    <div className="mockup-dot red"></div>
+                    <div className="mockup-dot yellow"></div>
+                    <div className="mockup-dot green"></div>
+                    <div className="mockup-browser-url">empresa.com</div>
+                  </div>
+                  
+                  <div className="mockup-browser-body">
+                    {/* Navbar */}
+                    <nav className="mockup-nav">
+                      <span className="mockup-nav-logo">BRANDING SYNC</span>
+                      <div className="mockup-nav-links">
+                        <span>Inicio</span>
+                        <span>Servicios</span>
+                        <span>Contacto</span>
+                      </div>
+                    </nav>
+                    
+                    {/* Hero Section */}
+                    <div className="mockup-hero">
+                      <span className="font-spec-badge h1-badge">H1 — {getFontName(selectedCollaborator.selections.h1)} ({getFontObj(selectedCollaborator.selections.h1).type})</span>
+                      <h1 className="consensus-h1" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h1).family, color: '#16171d', margin: '0 0 1rem 0' }}>
+                        {ROLE_SAMPLES.h1}
+                      </h1>
+
+                      <span className="font-spec-badge h2-badge" style={{ marginTop: '0.5rem' }}>H2 — {getFontName(selectedCollaborator.selections.h2)} ({getFontObj(selectedCollaborator.selections.h2).type})</span>
+                      <h2 className="consensus-h2" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h2).family, color: '#4f628d', margin: '0 0 1rem 0' }}>
+                        {ROLE_SAMPLES.h2}
+                      </h2>
+
+                      <span className="font-spec-badge body-badge" style={{ marginTop: '0.5rem' }}>Texto — {getFontName(selectedCollaborator.selections.body)} ({getFontObj(selectedCollaborator.selections.body).type})</span>
+                      <p className="consensus-body" style={{ fontFamily: getFontObj(selectedCollaborator.selections.body).family, color: '#2e303a', margin: '0 0 1.25rem 0' }}>
+                        {ROLE_SAMPLES.body}
+                      </p>
+
+                      <button className="mockup-cta" style={{ fontFamily: getFontObj(selectedCollaborator.selections.h2).family }}>
+                        Comenzar Proyecto
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Simulador de Instagram Post */}
+                <div className="mockup-insta-section" style={{ marginTop: '1.5rem' }}>
+                  <h4 className="mockup-section-title" style={{ color: '#16171d', fontSize: '0.9rem', marginBottom: '0.75rem' }}>Post de Redes Sociales (Instagram)</h4>
+                  <div className="instagram-post-container" style={{ margin: '0 auto', width: '100%', maxWidth: '280px' }}>
+                    <div className="insta-post-header">
+                      <div className="insta-avatar-story-ring">
+                        <div className="insta-avatar-image"></div>
+                      </div>
+                      <div className="insta-header-info">
+                        <span className="insta-username">marca.empresa</span>
+                        <span className="insta-location">Estudio de Diseño</span>
+                      </div>
+                      <div className="insta-options-dot">•••</div>
+                    </div>
+                    <div className="insta-image-area">
+                      <span className="insta-graphic-quote-mark">“</span>
+                      <p className="insta-graphic-text" style={{ fontFamily: getFontObj(selectedCollaborator.selections.instagram).family, fontSize: '1rem' }}>
+                        {ROLE_SAMPLES.instagram}
+                      </p>
+                      <div className="insta-graphic-badge">
+                        <span>{getFontName(selectedCollaborator.selections.instagram)}</span>
+                      </div>
+                    </div>
+                    <div className="insta-action-bar">
+                      <div className="insta-left-actions">
+                        <svg className="insta-action-icon heart" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <svg className="insta-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         <footer className="app-footer">
